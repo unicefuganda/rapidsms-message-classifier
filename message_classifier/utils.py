@@ -3,13 +3,16 @@ import math
 from .models import *
 from django.db.models import F
 from django.db.models import Sum
+from django.db import transaction
 
 
-def getwords(message):
+def getfeatures(message):
     regex=re.compile('\\W*')
     # Split the words by non-alpha characters
     words=[s.lower() for s in regex.split(message)
           if len(s)>2 and len(s)<20]
+    #use the message sender as a feature
+    #words.append(message.connection)
 
     # Return the unique set of words only
     return dict([(w,1) for w in words])
@@ -27,35 +30,29 @@ class Classifier(object):
 
     def increment_feature(self,feature,cat):
 
-        FeatureCount.objects.get(category=cat,feature=feature).update(count=F('count') + 1)
+        ClassifierFeature.objects.get_or_create(category=cat,feature=feature).update(count=F('count') + 1)
 
 
     def feature_count(self,feature,cat):
-        fc=FeatureCount.objects.filter(feature=feature,category=cat)
-        if fc.exists():
-            return fc[0].count
-        else:
-            return 0
+        fc,created= ClassifierFeature.objects.get_or_create(feature=feature,category=cat)
+        return float(fc.count)
+
 
     def increment_catcount(self,cat):
-        CategoryCount.objects.get(category=cat).update(count=F('count') + 1)
+        ClassifierCategory.objects.get_or_create(category=cat).update(count=F('count') + 1)
 
 
     def catcount(self,cat):
-        cc=CategoryCount.objects.filter(category=cat)
-        if cc.exists():
-            return cc[0].count
-        else:
-            return 0
+        cc,created=ClassifierCategory.objects.get_or_create(category=cat)
+        return float(cc.count)
 
     def categories(self):
-        return CategoryCount.objects.values_list("name",flat=True)
+        return ClassifierCategory.objects.values_list("name",flat=True)
 
     def totalcount(self):
     
-        total=CategoryCount.objects.aggregate(Sum("count"))
+        total=ClassifierCategory.objects.aggregate(Sum("count"))
         return total.get("count__sum",0)
-
 
     def train(self,item,cat):
         features=self.getfeatures(item)

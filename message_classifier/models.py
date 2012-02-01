@@ -2,17 +2,24 @@ from django.db import models
 from  rapidsms_httprouter.models import Message
 from .utils import *
 
-class FeatureCount(models.Model):
-    """ bayesian filter  training storage used to score new messages. """
-    feature = models.CharField( max_length=100)
-    category = models.CharField( max_length=100)
-    count = models.IntegerField(default=0, null=False)
+class ClassifierFeature(models.Model):
+    feature = models.CharField( max_length=100,db_index=True)
+    category = models.ForeignKey(ClassifierCategory)
+    count = models.IntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __unicode__(self):
+        return self.feature
 
 
-class CategoryCount(models.Model):
-    #storage of different probabilities
-    name = models.CharField(max_length=100)
-    count = models.IntegerField(default=0, null=False)
+class ClassifierCategory(models.Model):
+
+    name = models.CharField(max_length=100,primary_key=True)
+    count = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return self.name
 
 
 class ScoredMessage(Message):

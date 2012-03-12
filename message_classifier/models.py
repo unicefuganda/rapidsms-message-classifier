@@ -4,7 +4,7 @@ from .utils import *
 
 class ClassifierFeature(models.Model):
     feature = models.CharField( max_length=100,db_index=True)
-    category = models.ForeignKey(ClassifierCategory)
+    category = models.ForeignKey('ClassifierCategory')
     count = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

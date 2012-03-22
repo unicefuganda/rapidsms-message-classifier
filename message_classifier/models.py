@@ -1,6 +1,6 @@
 from django.db import models
 from  rapidsms_httprouter.models import Message
-from .utils import *
+
 
 class ClassifierFeature(models.Model):
     feature = models.CharField( max_length=100,db_index=True)
@@ -22,9 +22,10 @@ class ClassifierCategory(models.Model):
         return self.name
 
 
-class ScoredMessage(Message):
+class ScoredMessage(models.Model):
     score = models.FloatField(blank=True, null=True)
     trained_as = models.CharField(max_length=4, blank=True, null=True)
+    message=models.ForeignKey(Message)
 
     def classify(self,classifier,get_features):
         cl=classifier(get_features)

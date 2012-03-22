@@ -1,6 +1,6 @@
 import re
 import math
-from .models import *
+from message_classifier.models import * #ClassifierFeature,ClassifierCategory,ScoredMessage
 from django.db.models import F
 from django.db.models import Sum
 from django.db import transaction
@@ -29,8 +29,10 @@ class Classifier(object):
 
 
     def increment_feature(self,feature,cat):
+       
 
-        ClassifierFeature.objects.get_or_create(category=cat,feature=feature).update(count=F('count') + 1)
+        class_feature,created = ClassifierFeature.objects.get_or_create(category=cat,feature=feature)
+        ClassifierFeature.objects.filter(category=cat,feature=feature).update(count=F('count') + 1)
 
 
     def feature_count(self,feature,cat):
@@ -39,15 +41,17 @@ class Classifier(object):
 
 
     def increment_catcount(self,cat):
-        ClassifierCategory.objects.get_or_create(category=cat).update(count=F('count') + 1)
+        classifiercat,created=ClassifierCategory.objects.get_or_create(name=cat)
+        ClassifierCategory.objects.filter(name=cat).update(count=F('count') + 1)
 
 
     def catcount(self,cat):
-        cc,created=ClassifierCategory.objects.get_or_create(category=cat)
+        cc,created=ClassifierCategory.objects.get_or_create(name=cat)
         return float(cc.count)
 
     def categories(self):
-        return ClassifierCategory.objects.values_list("name",flat=True)
+        return ClassifierCategory.objects.all().distinct()
+       
 
     def totalcount(self):
     
@@ -58,7 +62,7 @@ class Classifier(object):
         features=self.getfeatures(item)
         # Increment the count for every feature with this category
         for feature in features:
-          self.increment_feature(feature,cat)
+            self.increment_feature(feature,cat)
 
         # Increment the count for this category
         self.increment_catcount(cat)
@@ -87,7 +91,7 @@ class FisherClassifier(Classifier):
     
     def cprob(self,feature,cat):
         # The frequency of this feature in this category
-        clf=self.fprob(feature,cat)
+        clf=self.feature_prob(feature,cat)
         if clf==0: return 0
 
         # The frequency of this feature in all the categories

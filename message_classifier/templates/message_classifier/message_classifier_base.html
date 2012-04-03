@@ -29,9 +29,21 @@
     {
         elem="#cat_"+message;
         url="/classifier/"+message+"/train/"+category+"/";
+        console.log(url);
          ajax_loading(elem);
     $(elem).load(url, function() {
        $('.ajax_loading').remove();
+    });
+    }
+
+     function edit_category(category)
+    {
+        elem="#edit_category";
+        url="/classifier/category/"+category+"/edit/";
+         ajax_loading(elem);
+    $(elem).load(url, function() {
+       $('.ajax_loading').remove();
+
     });
     }
 
@@ -58,7 +70,7 @@
 <div class="tab-pane active" id="download">
     <table>
         <tr><td>Select Date range for messages and download</td></tr>
-    <form action="/download">
+    <form action="" method="POST">
 
         {{ form.as_table }}
 <tr><td><input type="submit" value="Queue download"></td></tr>
@@ -94,9 +106,13 @@
     <table width="50%">
 
     {%  for category in categories%}
-    <tr><td>{{ category }}</td><td><a class="btn" href="javascript:void(0)" onclick="">Edit</a></td></tr>
+    <tr><td>{{ category }}</td><td><a class="btn" id="cat_{{ category.pk }}" href="javascript:void(0)" onclick="edit_category('{{ category.pk }}')">Edit</a></td></tr>
 {%  endfor %}
 </table>
+
+ <div id="edit_category" style="float:right;">
+     &nbsp;
+ </div>
 
 
 

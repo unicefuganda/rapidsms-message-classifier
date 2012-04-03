@@ -13,15 +13,30 @@ class ProcessExcelExportTask(Task):
         messages=Message.objects.filter(direction="I").exclude(application="script").filter(date__gte=start).filter(date__lte=end)
         messages_list=[]
         for message in messages:
-            msg_export_list=SortedDict()
-            msg_export_list['pk'] =message.pk
-            msg_export_list['mobile'] =message.connection.identity
-            msg_export_list['text'] =message.text
-            msg_export_list['category'] =''
-            messages_list.append(msg_export_list)
+            if len(message)>cutoff:
+                msg_export_list=SortedDict()
+                msg_export_list['pk'] =message.pk
+                msg_export_list['mobile'] =message.connection.identity
+                msg_export_list['text'] =message.text
+                msg_export_list['category'] =''
+                messages_list.append(msg_export_list)
         ExcelResponse(messages_list,output_name=excel_file_path,write_to_file=True)
 
 
 tasks.register(ProcessExcelExportTask)
+
+class ClassifyMessagesTask(Task):
+    def run(self):
+        pass
+
+class HandleExcelUpload(Task):
+    def run(self):
+        pass
+
+class UploadResponsesTask(Task):
+    def run(self):
+        pass
+
+
 
 

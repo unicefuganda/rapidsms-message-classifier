@@ -4,169 +4,246 @@
     Message Classifier - {{ block.super }}
 {% endblock %}
 {% block stylesheets %}
-    
-    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/splits.css" />
-    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/ureport.css" />
-    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/modules.css" />
-    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/icons.css" />
-    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}contact/stylesheets/messages.css" />
-    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/message_log.css" />
-     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}generic/stylesheets/jquery-ui-1.7.3.custom.css"/>
+
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/splits.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/ureport.min.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/modules.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/icons.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}contact/stylesheets/messages.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/message_log.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}generic/stylesheets/jquery-ui-1.7.3.custom.css"/>
 {% endblock %}
 {% block extra_js %}
 
-   
-     <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/jquery-ui.css"/>
- <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/jquery-ui.js"></script>
-     <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/dropdown.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/tabs.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/jquery-ui.css"/>
+    <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/ureport_extras.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/jquery-ui.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/dropdown.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/tabs.js"></script>
     <script type="text/javascript">
-    $(function() {
-               $("#id_startdate").datepicker({ dateFormat: 'dd/mm/yy' ,changeYear: true ,changeMonth: true,minDate: new Date(2009, 1 - 1, 1) });
-               $("#id_enddate").datepicker({ dateFormat: 'dd/mm/yy' ,changeYear: true ,changeMonth: true,minDate: new Date(2009, 1 - 1, 1) });
+        $(function() {
+            $("#id_startdate").datepicker({ dateFormat: 'dd/mm/yy' ,changeYear: true ,changeMonth: true,minDate: new Date(2009, 1 - 1, 1) });
+            $("#id_enddate").datepicker({ dateFormat: 'dd/mm/yy' ,changeYear: true ,changeMonth: true,minDate: new Date(2009, 1 - 1, 1) });
+
+            $("#queue_form")
+                       .bind('ajax:success', function(data, status, xhr) {
+                        var $form = $(this);
+
+                        // Reset fields and any validation errors, so form can be used again, but leave hidden_field values intact.
+                        $form.find('textarea,input[type="text"],input[type="file"]').val("");
+                        // Insert response partial into page below the form.
+                        $('#comments').append(xhr.responseText);
+                    })
+                    .bind('ajax:failure', function(xhr, status, error) {
+                        alert("something went wrong!");
+                    });
+
+
+            
+        });
+        function train(message, category) {
+            elem = "#cat_" + message;
+            console.log(elem);
+            url = "/classifier/" + message + "/train/" + category + "/";
+            console.log(url);
+            ajax_loading(elem);
+            $(elem).load(url, function() {
+                $('.ajax_loading').remove();
             });
-    function train(message,category)
-    {
-        elem="#cat_"+message;
-        url="/classifier/"+message+"/train/"+category+"/";
-        console.log(url);
-         ajax_loading(elem);
-    $(elem).load(url, function() {
-       $('.ajax_loading').remove();
-    });
-    }
+        }
 
-     function edit_category(category)
-    {
-        elem="#edit_category";
-        url="/classifier/category/"+category+"/edit/";
-         ajax_loading(elem);
-    $(elem).load(url, function() {
-       $('.ajax_loading').remove();
+        function edit_category(category) {
+            elem = "#edit_category";
+            url = "/classifier/category/" + category + "/edit/";
+            ajax_loading(elem);
+            $(elem).load(url, function() {
+                $('.ajax_loading').remove();
 
-    });
-    }
+            });
+        }
 
-   </script>
-   
+
+    </script>
+
 {% endblock %}
-<div>
-    
-</div>
+
 {% block content %}
-<div>
-     <ul class="nav nav-tabs">
-    <li class="active" ><a href="#download" data-toggle="tab">Queue Download</a></li>
-    <li><a href="#upload" data-toggle="tab">Upload </a></li>
-    <li><a href="#reports" data-toggle="tab">Reports</a></li>
-    <li><a href="#category" data-toggle="tab">add Category</a></li>
-    <li><a href="#category_edit" data-toggle="tab">Edit Category</a></li>
-    <li><a href="#poll_upload" data-toggle="tab">Upload Poll Responses</a></li>
-      <li><a href="#ready" data-toggle="tab">My Queued Reports</a></li>
-    </ul>
+    
+    <div>
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#download" data-toggle="tab">Queue Download</a></li>
+            <li><a href="#upload" data-toggle="tab">Upload </a></li>
+            <li><a href="#reports" data-toggle="tab">Reports</a></li>
+            <li><a href="#category" data-toggle="tab">add Category</a></li>
+            <li><a href="#category_edit" data-toggle="tab">Edit Category</a></li>
+            <li><a href="#poll_upload" data-toggle="tab">Upload Poll Responses</a></li>
+            <li><a href="#ready" data-toggle="tab">My Queued Reports</a></li>
+        </ul>
     </div>
     <div>
-    <div class="tab-content">
-<div class="tab-pane active" id="download">
-    <table>
-        <tr><td>Select Date range for messages and download</td></tr>
-    <form action="" method="POST">
+        <div class="tab-content">
 
-        {{ form.as_table }}
-<tr><td><input type="submit" value="Queue download"></td></tr>
-    </form>
-     </table>
-</div>
+            <div class="tab-pane active" id="download">
+                  <form action="{% url message_classifier.views.message_classification %}" method="POST" data-remote=true id="queue_form">
+                <table>
+                    <tr>
+                        <td>Select Date range for messages to queue for download</td>
+                    </tr>
 
 
-<div class="tab-pane" id="upload">
-    <table>
-        <tr><td>Upload Classified Messages</td></tr>
-     <form enctype="multipart/form-data" action="" method="POST">
-    {{ upload_form.as_table }}
-        <tr><td><input type="submit" value="upload"></td></tr>
-         </form>
-    </table>
-</div>
-<div class="tab-pane" id="category">
-    <h2>Add new Category</h2>
-    <table>
-<form method="Post" action="">
-    {{ category_form.as_table }}
-    <tr><td><a class="btn" href="javascript:void(0)" onclick="">Add Category</a></td><td> <a href="{%  url flaggedmessages %}">Manage Category Flags</a></td></tr>
-</form>
-</table>
-
-    
-
-</div>
-
- <div class="tab-pane" id="category_edit">
-    <h2>Categories</h2>
-    <table width="50%">
-
-    {%  for category in categories%}
-    <tr><td>{{ category }}</td><td><a class="btn" id="cat_{{ category.pk }}" href="javascript:void(0)" onclick="edit_category('{{ category.pk }}')">Edit</a></td></tr>
-{%  endfor %}
-</table>
-
- <div id="edit_category" style="float:right;">
-     &nbsp;
- </div>
+                        {{ msg_form.as_table }}
+                        <tr>
+                            <td><input type="submit" value="Queue download" data-disable-with="Queueing......"></td>
+                        </tr>
 
 
 
-</div>
-
-    <div class="tab-pane" id="ready">
-    <h2>My Queued Reports</h2>
-    <table width="50%">
-
-</table>
+                </table>
+                      </form>
+            </div>
 
 
-
-</div>
-
-    <div class="tab-pane" id="poll_upload">
-    <table>
-        <tr><td>Upload Poll Responses</td></tr>
-     <form enctype="multipart/form-data" action="" method="POST">
-         <tr><td>Upload Poll Responses File</td> <td>{{ upload_form.excel_file }}</td></tr>
-    {{ upload_form.as_table }}
-        <tr><td><input type="submit" value="upload"></td></tr>
-         </form>
-    </table>
-</div>
-<div class="tab-pane" id="reports">
-
-
-    <h2>Departments</h2>
-<table class="zebra-striped fg"width="100%">
-<thead><tr><td>Department</td><td>Categories</td><td>Export</td></tr></thead>
-<tbody>
-    {% for department in departments %}
-      <tr><td><h3>{{ department.name }}</h3></td> <td></td><td><a href="" class="btn">Downlod {{ department.name }} Messages</a></td>
-        <tr><td></td><td>{{ department.name }} Categories</td></tr>
-        {%  for cat in department.categories %}
-
-            <tr><td></td><td>{{ cat }}</td><td><a class="btn" href="">Download {{ cat }} messages</a></td></tr>
-            {% endfor %}
-    {% endfor %}
-</tbody>
-</table>
+            <div class="tab-pane" id="upload">
+                <table>
+                    <tr>
+                        <td>Upload Classified Messages</td>
+                    </tr>
+                    <form enctype="multipart/form-data" action="" method="POST" data-remote=true>
+                        {{ upload_form.as_table }}
+                        <tr>
+                            <td><input type="submit" value="upload" data-disable-with="Submitting"></td>
+                        </tr>
+                    </form>
+                </table>
+            </div>
+            <div class="tab-pane" id="category">
+                <h2>Add new Category</h2>
+                <table>
+                    <form method="Post" action="">
+                        {{ category_form.as_table }}
+                        <tr>
+                            <td><a class="btn" href="javascript:void(0)" onclick="">Add Category</a></td>
+                            <td><a href="{%  url flaggedmessages %}">Manage Category Flags</a></td>
+                        </tr>
+                    </form>
+                </table>
 
 
-   
-</div>
-</div>
-        <script>
+            </div>
 
-</script>
+            <div class="tab-pane" id="category_edit">
+                <h2>Categories</h2>
+                <table width="50%">
+
+                    {% for category in categories %}
+                        <tr>
+                            <td>{{ category }}</td>
+                            <td><a class="btn" id="cat_{{ category.pk }}" href="javascript:void(0)"
+                                   onclick="edit_category('{{ category.pk }}')">Edit</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+                <div id="edit_category" style="float:right;margin-top:-280px;">
+                    &nbsp;
+                </div>
+
+
+
+            </div>
+
+            <div class="tab-pane" id="ready">
+                <h2>My Queued Reports</h2>
+                <table width="100%" class="zebra-striped">
+                    <thead>
+                    <tr>
+                        <td>
+                            Name
+                        </td>
+                        <td>
+                            Date
+                        </td>
+                        <td>
+                            Download
+                        </td>
+                    </tr>
+                    </thead>
+                    {% for report in reports %}
+
+                        <tr>
+                            <td>{{ report.title }}</td>
+                            <td>{{ report.date }}</td>
+                            <td><a class="btn" href="{{ report.link }}">Download</a></td>
+                        </tr>
+                    {% endfor %}
+
+                </table>
+
+
+
+            </div>
+
+            <div class="tab-pane" id="poll_upload">
+                <table>
+                    <tr>
+                        <td>Upload Poll Responses</td>
+                    </tr>
+                    <form enctype="multipart/form-data" action="" method="POST" data-remote=true>
+                        <tr>
+                            <td>Upload Poll Responses File</td>
+                            <td>{{ upload_form.excel_file }}</td>
+                        </tr>
+                        {{ upload_form.as_table }}
+                        <tr>
+                            <td><input type="submit" value="upload"></td>
+                        </tr>
+                    </form>
+                </table>
+            </div>
+            <div class="tab-pane" id="reports">
+
+
+                <h2>Departments</h2>
+                <table class="zebra-striped fg" width="100%">
+                    <thead>
+                    <tr>
+                        <td>Department</td>
+                        <td>Categories</td>
+                        <td>Export</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for department in departments %}
+                        <tr>
+                            <td><h3>{{ department.name }}</h3></td>
+                            <td></td>
+                            <td><a href="" class="btn">Downlod {{ department.name }} Messages</a></td>
+                        <tr>
+                            <td></td>
+                            <td>{{ department.name }} Categories</td>
+                        </tr>
+                        {% for cat in department.categories %}
+
+                            <tr>
+                                <td></td>
+                                <td>{{ cat }}</td>
+                                <td><a class="btn" href="">Download {{ cat }} messages</a></td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+
+
+            </div>
+        </div>
+
 
 
     </div>
 
 
-{{ block.super }}
+    {{ block.super }}
 {% endblock %}

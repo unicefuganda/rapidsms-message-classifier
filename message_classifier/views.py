@@ -56,18 +56,21 @@ def message_classification(request):
                 message = handle_excel_file(request.FILES['excel_file'])
 
         if request.POST:
-            form = filterForm(request.Post)
+            msg_form = filterForm(request.POST)
 
-            if form.is_valid():
-                result = ProcessExcelExportTask.delay(form.cleaned_data['start_date'], form.cleaned_data['end_date'],
-                                                      form.cleaned_data.get('cutoff', 30))
-                return  HttpResponse(status=200)
+            if msg_form.is_valid():
+                result = ProcessExcelExportTask.delay(msg_form.cleaned_data['startdate'], msg_form.cleaned_data['enddate'],
+                                                      msg_form.cleaned_data.get('size', 30), msg_form.cleaned_data['name'],
+                                                      request.user)
+                return HttpResponse(status=200)
+                
 
     categories = ClassifierCategory.objects.all()
+    reports=Report.objects.filter(user=request.user).order_by('-date')
     departments = Department.objects.all()
     category_form = CategoryForm()
 
-    form = filterForm()
+    msg_form = filterForm()
     upload_form = ExcelUploadForm()
 
     messages =\
@@ -91,11 +94,12 @@ def message_classification(request):
         columns=columns,
         sort_column='date',
         sort_ascending=False,
-        form=form,
+        msg_form=msg_form,
         upload_form=upload_form,
         departments=departments,
         categories=categories,
         category_form=category_form,
+        reports=reports,
         )
 
 
@@ -107,8 +111,6 @@ def train(request, message_pk, category_pk):
     return HttpResponse(cat.name)
 
 
-def handle_download(start_date, end_date, cutoff=30):
-    messages = Message.objects.filter(date__gte=start_date, date__lte=end_date)
 
 
 def edit_category(request, category_pk):

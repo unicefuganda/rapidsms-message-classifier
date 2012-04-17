@@ -17,7 +17,6 @@
 
 
     <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/jquery-ui.css"/>
-    <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/ureport_extras.min.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/jquery-ui.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/dropdown.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/tabs.js"></script>
@@ -85,7 +84,7 @@
         <div class="tab-content">
 
             <div class="tab-pane active" id="download">
-                  <form action="{% url message_classifier.views.message_classification %}" method="POST" data-remote=true id="queue_form">
+                  <form action="" method="POST" data-remote=true id="queue_form">
                 <table>
                     <tr>
                         <td>Select Date range for messages to queue for download</td>
@@ -94,7 +93,7 @@
 
                         {{ msg_form.as_table }}
                         <tr>
-                            <td><input type="submit" value="Queue download" data-disable-with="Queueing......"></td>
+                            <td><input type="submit" name="Queue download" value="Queue download" data-disable-with="Queueing......"></td>
                         </tr>
 
 
@@ -105,31 +104,34 @@
 
 
             <div class="tab-pane" id="upload">
+                <form enctype="multipart/form-data" action="" method="POST" >
                 <table>
                     <tr>
                         <td>Upload Classified Messages</td>
                     </tr>
-                    <form enctype="multipart/form-data" action="" method="POST" data-remote=true>
+
                         {{ upload_form.as_table }}
                         <tr>
-                            <td><input type="submit" value="upload" data-disable-with="Submitting"></td>
+                            <td><input type="submit" value="upload" ></td>
                         </tr>
-                    </form>
+
                 </table>
+                </form>
             </div>
             <div class="tab-pane" id="category">
                 <h2>Add new Category</h2>
+                <form method="Post" action="">
                 <table>
-                    <form method="Post" action="">
+
                         {{ category_form.as_table }}
                         <tr>
                             <td><a class="btn" href="javascript:void(0)" onclick="">Add Category</a></td>
                             <td><a href="{%  url flaggedmessages %}">Manage Category Flags</a></td>
                         </tr>
-                    </form>
+
                 </table>
 
-
+                </form>
             </div>
 
             <div class="tab-pane" id="category_edit">
@@ -185,21 +187,21 @@
             </div>
 
             <div class="tab-pane" id="poll_upload">
+                <form enctype="multipart/form-data" action="" method="POST" data-remote=true>
                 <table>
                     <tr>
                         <td>Upload Poll Responses</td>
                     </tr>
-                    <form enctype="multipart/form-data" action="" method="POST" data-remote=true>
+
                         <tr>
                             <td>Upload Poll Responses File</td>
-                            <td>{{ upload_form.excel_file }}</td>
-                        </tr>
-                        {{ upload_form.as_table }}
-                        <tr>
+                            <td>{{ poll_form.excel }}</td>
+
                             <td><input type="submit" value="upload"></td>
                         </tr>
-                    </form>
+
                 </table>
+                </form>
             </div>
             <div class="tab-pane" id="reports">
 

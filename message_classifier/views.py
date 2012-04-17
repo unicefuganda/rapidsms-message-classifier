@@ -17,61 +17,43 @@ from django.contrib.auth.decorators import login_required
 from xlrd import open_workbook
 from .tasks import *
 
-def handle_excel_file(file):
-    if file:
-        excel = file.read()
-        workbook = open_workbook(file_contents=excel)
-        worksheet = workbook.sheet_by_index(0)
-
-        if worksheet.nrows > 1:
-            validated_numbers = []
-            for row in range(1, worksheet.nrows):
-                pk, mobile, text, category = worksheet.cell(row, 0), worksheet.cell(row, 1), worksheet.cell(row,
-                                                                                                            2), worksheet.cell(
-                    row, 3)
-                message = Message.objects.create(pk=pk)
-                cat, created = ClassifierCategory.objects.get_or_create(name=category)
-
-                sm, created = ScoredMessage.objects.get_or_create(message=message)
-                sm.trained_as = cat
-                sm.save()
-                classifier = FisherClassifier(getfeatures)
-                sm.train(FisherClassifier, getfeatures, cat)
-
-
-        else:
-            info =\
-            'You seem to have uploaded an empty excel file'
-    else:
-        info = 'Invalid file'
-    return info
 
 
 @login_required
 def message_classification(request):
+
     if request.method == "POST":
         if request.FILES:
             upload_form = ExcelUploadForm(request.FILES)
+            poll_form=PollUploadForm()
+
             if upload_form.is_valid():
-                message = handle_excel_file(request.FILES['excel_file'])
+                message = HandleExcelClassification.delay(request.FILES['excel_file'])
+            if poll_form.is_valid():
+                message = UploadResponsesTask.delay(request.FILES['excel'])
+
+
 
         if request.POST:
             msg_form = filterForm(request.POST)
 
+
             if msg_form.is_valid():
+
                 result = ProcessExcelExportTask.delay(msg_form.cleaned_data['startdate'], msg_form.cleaned_data['enddate'],
                                                       msg_form.cleaned_data.get('size', 30), msg_form.cleaned_data['name'],
                                                       request.user)
                 return HttpResponse(status=200)
-                
+
 
     categories = ClassifierCategory.objects.all()
-    reports=Report.objects.filter(user=request.user).order_by('-date')
+    reports=Report.objects.filter(user=request.user).order_by('-date')[5:]
     departments = Department.objects.all()
     category_form = CategoryForm()
 
     msg_form = filterForm()
     upload_form = ExcelUploadForm()
+    poll_form=PollUploadForm()
 
     messages =\
     ScoredMessage.objects.all().order_by('-message__date')
@@ -100,6 +82,7 @@ def message_classification(request):
         categories=categories,
         category_form=category_form,
         reports=reports,
+        poll_form=poll_form,
         )
 
 

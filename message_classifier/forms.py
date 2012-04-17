@@ -23,6 +23,11 @@ class ExcelUploadForm(forms.Form):
     excel_file = forms.FileField(label='Classified Messages Excel File',
                                  required=False)
 
+class PollUploadForm(forms.Form):
+
+    excel = forms.FileField(label='Poll Excel File',
+                                 required=False)
+
 
 class CategoryForm(forms.ModelForm):
     class Meta:

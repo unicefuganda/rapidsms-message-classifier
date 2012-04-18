@@ -61,8 +61,8 @@ class HandleExcelClassification(Task):
     def handle_excel_file(self, file):
         rdb.set_trace()
         if file:
-            excel = file.read()
-            workbook = open_workbook(file_contents=excel)
+
+            workbook = open_workbook(file_contents=file)
             worksheet = workbook.sheet_by_index(0)
 
             if worksheet.nrows > 1:
@@ -120,8 +120,8 @@ class UploadResponsesTask(Task):
             resp.save()
     def handle_excel_file(self, file):
         if file:
-            excel = file.read()
-            workbook = open_workbook(file_contents=excel)
+
+            workbook = open_workbook(file_contents=file)
             worksheet = workbook.sheet_by_index(0)
 
             if worksheet.nrows > 1:

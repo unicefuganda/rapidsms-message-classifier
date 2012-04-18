@@ -22,8 +22,11 @@ from .tasks import *
 @login_required
 def message_classification(request):
 
+
     if request.method == "POST":
+
         if request.FILES:
+
             upload_form = ExcelUploadForm(request.FILES)
             poll_form=PollUploadForm()
 

@@ -38,6 +38,24 @@
                         alert("something went wrong!");
                     });
 
+            $('#msg_upload_form').submit(function() {
+
+                ajax_loading('#msg_upload_form');
+                $('#msg_upload_form').attr('target', 'upload_target');
+
+                $('.ajax_loading').remove();
+            });
+
+
+            $('#poll_upload_form').submit(function() {
+
+                            ajax_loading('#msg_upload_form');
+                           $('#poll_upload_form').attr('target', 'upload_target2');
+
+                $('.ajax_loading').remove();
+
+                       });
+
 
             
         });
@@ -104,7 +122,7 @@
 
 
             <div class="tab-pane" id="upload">
-                <form enctype="multipart/form-data" action="" method="POST" data-remote=true>
+                <form enctype="multipart/form-data" id="msg_upload_form" action="" method="POST" >
                 <table>
                     <tr>
                         <td>Upload Classified Messages</td>
@@ -116,6 +134,7 @@
                         </tr>
 
                 </table>
+                    <iframe id="upload_target" name="upload_target" src="" style="display:none">&nbsp;</iframe>
                 </form>
             </div>
             <div class="tab-pane" id="category">
@@ -187,7 +206,7 @@
             </div>
 
             <div class="tab-pane" id="poll_upload">
-                <form enctype="multipart/form-data" action="" method="POST" data-remote=true>
+                <form id="poll_upload_form" enctype="multipart/form-data" action="" method="POST" >
                 <table>
                     <tr>
                         <td>Upload Poll Responses</td>
@@ -197,7 +216,8 @@
                             <td>Upload Poll Responses File</td>
                             <td>{{ poll_form.excel }}</td>
 
-                            <td><input type="submit" value="upload" data-disable-with="uploading..."></td>
+                            <td><input type="submit" value="upload" ></td>
+                            <iframe id="upload_target2" name="upload_target2" src="" style="display:none">&nbsp;</iframe>
                         </tr>
 
                 </table>

@@ -104,7 +104,7 @@
 
 
             <div class="tab-pane" id="upload">
-                <form enctype="multipart/form-data" action="" method="POST" >
+                <form enctype="multipart/form-data" action="" method="POST" data-remote=true>
                 <table>
                     <tr>
                         <td>Upload Classified Messages</td>
@@ -197,7 +197,7 @@
                             <td>Upload Poll Responses File</td>
                             <td>{{ poll_form.excel }}</td>
 
-                            <td><input type="submit" value="upload"></td>
+                            <td><input type="submit" value="upload" data-disable-with="uploading..."></td>
                         </tr>
 
                 </table>

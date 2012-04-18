@@ -1,7 +1,9 @@
 <h2>Editing {{ category.name }} </h2>
-    <table>
 <form method="Post" action="{% url  message_classifier.views.edit_category category.pk %}" data-remote=true>
+    <table>
+
     {{ category_form.as_table }}
     <tr><td><input class="btn" type="submit" value="save edits"></td></tr>
-</form>
+
 </table>
+</form>

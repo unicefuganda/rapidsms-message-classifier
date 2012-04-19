@@ -27,6 +27,7 @@ def message_classification(request):
 
         if request.FILES:
 
+
             upload_form = ExcelUploadForm(request.FILES)
             poll_form=PollUploadForm(request.POST,request.FILES)
 
@@ -34,13 +35,15 @@ def message_classification(request):
                 if request.FILES.get('excel_file'):
                     excel = request.FILES['excel_file'].read()
 
-                    message = HandleExcelClassification.delay(excel)
+                    message = classify_excel.delay(excel)
+                    print message
                     return HttpResponse(status=200)
             if poll_form.is_valid():
                 if request.FILES.get('excel'):
                     excel = request.FILES['excel'].read()
                     poll=poll_form.cleaned_data['poll']
-                    message = UploadResponsesTask.delay(excel,poll)
+                    message = upload_responses.delay(excel,poll)
+                    print message
                     return HttpResponse(status=200)
 
 
@@ -51,9 +54,10 @@ def message_classification(request):
 
             if msg_form.is_valid():
 
-                result = ProcessExcelExportTask.delay(msg_form.cleaned_data['startdate'], msg_form.cleaned_data['enddate'],
+                result = message_export.delay(msg_form.cleaned_data['startdate'], msg_form.cleaned_data['enddate'],
                                                       msg_form.cleaned_data.get('size', 30), msg_form.cleaned_data['name'],
                                                       request.user)
+                print result
                 return HttpResponse(status=200)
 
 

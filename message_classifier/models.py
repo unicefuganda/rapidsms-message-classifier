@@ -19,7 +19,7 @@ class ClassifierCategory(models.Model):
 
     name = models.CharField(max_length=100,primary_key=True)
     count = models.IntegerField(default=0)
-    department=models.ForeignKey("Department")
+    department=models.ForeignKey("Department",null=True)
     flags=models.ManyToManyField(Flag,null=True)
 
     def __unicode__(self):

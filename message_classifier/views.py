@@ -28,15 +28,20 @@ def message_classification(request):
         if request.FILES:
 
             upload_form = ExcelUploadForm(request.FILES)
-            poll_form=PollUploadForm()
+            poll_form=PollUploadForm(request.POST,request.FILES)
 
             if upload_form.is_valid():
-                excel = request.FILES['excel_file'].read()
-                message = HandleExcelClassification.delay(excel)
+                if request.FILES.get('excel_file'):
+                    excel = request.FILES['excel_file'].read()
+
+                    message = HandleExcelClassification.delay(excel)
+                    return HttpResponse(status=200)
             if poll_form.is_valid():
-                excel = request.FILES['excel'].read()
-                message = HandleExcelClassification.delay(excel)
-                message = UploadResponsesTask.delay(excel)
+                if request.FILES.get('excel'):
+                    excel = request.FILES['excel'].read()
+                    poll=poll_form.cleaned_data['poll']
+                    message = UploadResponsesTask.delay(excel,poll)
+                    return HttpResponse(status=200)
 
 
 

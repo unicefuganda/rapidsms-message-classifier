@@ -95,7 +95,7 @@ class FisherClassifier(Classifier):
         if clf==0: return 0
 
         # The frequency of this feature in all the categories
-        freqsum=sum([self.fprob(feature,cat) for cat in self.categories()])
+        freqsum=sum([self.feature_prob(feature,cat) for cat in self.categories()])
 
         # The probability is the frequency in this category divided by
         # the overall frequency

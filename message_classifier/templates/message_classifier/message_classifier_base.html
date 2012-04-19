@@ -90,12 +90,12 @@
     <div>
         <ul class="nav nav-tabs">
             <li class="active"><a href="#download" data-toggle="tab">Queue Download</a></li>
-            <li><a href="#upload" data-toggle="tab">Upload </a></li>
-            <li><a href="#reports" data-toggle="tab">Reports</a></li>
+            <li><a href="#upload" data-toggle="tab">Upload Classified</a></li>
+            <li><a href="#reports" data-toggle="tab">Department Reports</a></li>
             <li><a href="#category" data-toggle="tab">add Category</a></li>
             <li><a href="#category_edit" data-toggle="tab">Edit Category</a></li>
             <li><a href="#poll_upload" data-toggle="tab">Upload Poll Responses</a></li>
-            <li><a href="#ready" data-toggle="tab">My Queued Reports</a></li>
+            <li><a href="#ready" data-toggle="tab">My Queued Downloads</a></li>
         </ul>
     </div>
     <div>
@@ -211,12 +211,13 @@
                     <tr>
                         <td>Upload Poll Responses</td>
                     </tr>
+                    <tr><td>Select Poll:</td><td>{{ poll_form.poll }}</td></tr>
 
                         <tr>
                             <td>Upload Poll Responses File</td>
                             <td>{{ poll_form.excel }}</td>
 
-                            <td><input type="submit" value="upload" ></td>
+                           <tr> <td><input type="submit" value="upload" ></td></tr>
                             <iframe id="upload_target2" name="upload_target2" src="" style="display:none">&nbsp;</iframe>
                         </tr>
 

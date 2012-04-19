@@ -2,6 +2,7 @@
 from django import forms
 from django.forms.util import ErrorList
 from .models import *
+from poll.models import Poll
 class filterForm(forms.Form):
     startdate = forms.DateField(('%d/%m/%Y',), label='Start Date', required=False,widget=forms.DateTimeInput(format='%d/%m/%Y', attrs={
                                                  'class': 'input',
@@ -24,6 +25,7 @@ class ExcelUploadForm(forms.Form):
                                  required=False)
 
 class PollUploadForm(forms.Form):
+    poll = forms.ModelChoiceField(queryset=Poll.objects.all().order_by('-pk' ))
 
     excel = forms.FileField(label='Poll Excel File',
                                  required=False)

@@ -15,10 +15,6 @@ from celery.task.schedules import crontab
 from celery.decorators import periodic_task
 from poll.models import ResponseCategory,Poll,Response
 
-@task
-def add(x, y):
-    print("Executing task id %r, args: %r kwargs: %r" % (
-        add.request.id, add.request.args, add.request.kwargs))
 
 
 class ProcessExcelExportTask(Task):
@@ -49,17 +45,13 @@ class ProcessExcelExportTask(Task):
 
 
 
-
-
-
-
 class HandleExcelClassification(Task):
     routing_key = 'ureport.upload'
     name = "message_classifier.tasks.HandleExcelClassification"
     ignore_result = True
 
     def handle_excel_file(self, file):
-        rdb.set_trace()
+
         if file:
 
             workbook = open_workbook(file_contents=file)
@@ -68,10 +60,10 @@ class HandleExcelClassification(Task):
             if worksheet.nrows > 1:
                 validated_numbers = []
                 for row in range(1, worksheet.nrows):
-                    pk, mobile, text, date, category, action = worksheet.cell(row, 0), worksheet.cell(row,
-                        1), worksheet.cell(row,
-                        2), worksheet.cell(
-                        row, 3), worksheet.cell(row, 4), worksheet.cell(row, 5)
+                    pk, mobile, text, date, category, action = worksheet.cell(row, 0).value, worksheet.cell(row,
+                        1).value, worksheet.cell(row,
+                        2).value, worksheet.cell(
+                        row, 3).value, worksheet.cell(row, 4).value, worksheet.cell(row, 5).value
                     message = Message.objects.get(pk=pk)
                     cat, created = ClassifierCategory.objects.get_or_create(name=category)
 
@@ -91,6 +83,9 @@ class HandleExcelClassification(Task):
         return info
 
     def run(self, file, **kwargs):
+        print("Executing task id %r, args: %r kwargs: %r" % (
+                self.request.id, self.request.args, self.request.kwargs))
+
         self.handle_excel_file(file)
 
 
@@ -98,38 +93,25 @@ class UploadResponsesTask(Task):
     routing_key = 'ureport.poll_upload'
     name = "message_classifier.tasks.UploadResponsesTask"
     ignore_result = True
-    def reprocess_responses(self,poll):
-        for rc in ResponseCategory.objects.filter(category__poll=self, is_override=False):
-            rc.delete()
 
-        for resp in self.responses.all():
-            resp.has_errors = False
-            for category in self.categories.all():
-                for rule in category.rules.all():
-                    regex = re.compile(rule.regex, re.IGNORECASE)
-                    if resp.eav.poll_text_value:
-                        if regex.search(resp.eav.poll_text_value.lower()) and not resp.categories.filter(category=category).count():
-                            if category.error_category:
-                                resp.has_errors = True
-                            rc = ResponseCategory.objects.create(response=resp, category=category)
-                            break
-            if not resp.categories.all().count() and self.categories.filter(default=True).count():
-                if self.categories.get(default=True).error_category:
-                    resp.has_errors = True
-                resp.categories.add(ResponseCategory.objects.create(response=resp, category=self.categories.get(default=True)))
-            resp.save()
-    def handle_excel_file(self, file):
+
+    def handle_excel_file(self, file,poll):
         if file:
 
             workbook = open_workbook(file_contents=file)
             worksheet = workbook.sheet_by_index(0)
 
             if worksheet.nrows > 1:
-                validated_numbers = []
+                response_lst = []
+                response_pks=[]
                 for row in range(1, worksheet.nrows):
-                    pk, mobile, text, category = worksheet.cell(row, 0), worksheet.cell(row, 1), worksheet.cell(row,
-                        2), worksheet.cell(row, 3)
-
+                    contact_pk,message_pk,  category = worksheet.cell(row, 0).value, worksheet.cell(row, 1).value, worksheet.cell(row,
+                        12).value
+                    rc=ResponseCategory.objects.get(response__message__pk=int(message_pk.strip()))
+                    rc.category=poll.categories.get(name=category.strip())
+                    rc.save()
+                    response_pks.append(message_pk.strip())
+                responses=poll.responses.exclude(message__pk__in=response_pks).delete()
 
             else:
                 info =\
@@ -140,12 +122,16 @@ class UploadResponsesTask(Task):
 
 
 
-    def run(self, file, **kwargs):
+    def run(self, file,poll, **kwargs):
         self.handle_excel_file(file)
+        for rc in ResponseCategory.objects.filter(category__poll=poll):
+            rc.delete()
 
-#run every week
-@periodic_task(run_every=datetime.timedelta(seconds=604800))
-def generate_reprts():
+
+
+#run every sunday at 2:30 am
+@periodic_task(run_every=crontab(hour=2, minute=30, day_of_week=0))
+def generate_reports():
     root_path = os.path.dirname(os.path.realpath(__file__))
     categories = ClassifierCategory.objects.all()
 
@@ -163,8 +149,8 @@ def generate_reprts():
             messages_list.append(msg_export_list)
         ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
 
-#run everyday at 2:30
-@periodic_task(run_every=crontab(hour=2, minute=30))
+#run eve
+@periodic_task(run_every=crontab(hour=4, minute=30, day_of_week='*'))
 def classify_messages():
     classified_messages = ScoredMessage.objects.values_list('message')
     messages = Message.objects.exclude(pk__in=classified_messages)
@@ -172,7 +158,7 @@ def classify_messages():
     for message in messages:
         if len(message.text) > 30:
             sm, created = ScoredMessage.objects.get_or_create(message=message)
-            sm.category = sm.classify(classifier, getfeatures)
+            sm.category = sm.classify(FisherClassifier, getfeatures)
             sm.save()
 
 

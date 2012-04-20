@@ -74,7 +74,6 @@ def upload_responses(file, poll):
     if file:
         workbook = open_workbook(file_contents=file)
         worksheet = workbook.sheet_by_index(0)
-
         if worksheet.nrows > 1:
             response_lst = []
             response_pks = []
@@ -82,18 +81,16 @@ def upload_responses(file, poll):
                 contact_pk, message_pk, category = worksheet.cell(row, 0).value, worksheet.cell(row,
                     1).value, worksheet.cell(row,
                     12).value
-                rc = ResponseCategory.objects.get(response__message__pk=int(message_pk.strip()))
-                rc.category = poll.categories.get(name=category.strip())
-                rc.save()
+                try:
+                    rc = ResponseCategory.objects.get(response__message__pk=int(message_pk))
+                    rc.category = poll.categories.get(name=category.strip())
+                    rc.save()
+                except ResponseCategory.DoesNotExist:
+                    continue
                 response_pks.append(message_pk.strip())
             responses = poll.responses.exclude(message__pk__in=response_pks).delete()
 
-        else:
-            info =\
-            'You seem to have uploaded an empty excel file'
-    else:
-        info = 'Invalid file'
-    return info
+     
 
 
 #run every sunday at 2:30 am

@@ -78,16 +78,24 @@ def upload_responses(file, poll):
             response_lst = []
             response_pks = []
             for row in range(1, worksheet.nrows):
+
                 contact_pk, message_pk, category = worksheet.cell(row, 0).value, worksheet.cell(row,
                     1).value, worksheet.cell(row,
                     12).value
+                try:
+                    res=Response.objects.get(message__pk=int(message_pk))
+                    res.poll=poll
+                    res.save()
+                except Response.DoesNotExist:
+                    continue
+                response_pks.append(int(message_pk))
                 try:
                     rc = ResponseCategory.objects.get(response__message__pk=int(message_pk))
                     rc.category = poll.categories.get(name=category.strip())
                     rc.save()
                 except ResponseCategory.DoesNotExist:
                     continue
-                response_pks.append(message_pk)
+
             responses = poll.responses.exclude(message__pk__in=response_pks).delete()
 
 

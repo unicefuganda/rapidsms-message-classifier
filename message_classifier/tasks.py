@@ -87,10 +87,10 @@ def upload_responses(file, poll):
                     rc.save()
                 except ResponseCategory.DoesNotExist:
                     continue
-                response_pks.append(message_pk.strip())
+                response_pks.append(message_pk)
             responses = poll.responses.exclude(message__pk__in=response_pks).delete()
 
-     
+
 
 
 #run every sunday at 2:30 am

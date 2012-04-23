@@ -125,7 +125,7 @@ def generate_reports():
 @periodic_task(run_every=crontab(hour=4, minute=30, day_of_week='*'))
 def classify_messages():
     classified_messages = ScoredMessage.objects.values_list('message')
-    messages = Message.objects.exclude(pk__in=classified_messages, direction="I")
+    messages = Message.objects.exclude(pk__in=classified_messages).filter(direction="I")
     classifier = FisherClassifier(getfeatures)
     for message in messages:
         if len(message.text) > 30:
@@ -133,4 +133,13 @@ def classify_messages():
             sm.category = sm.classify(FisherClassifier, getfeatures)
             sm.save()
 
-
+@task
+def reclassify():
+    classified_messages = ScoredMessage.objects.values_list('message')
+    messages = Message.objects.filter(pk__in=classified_messages)
+    classifier = FisherClassifier(getfeatures)
+    for message in messages:
+        if len(message.text) > 30:
+            sm, created = ScoredMessage.objects.get_or_create(message=message)
+            sm.category = sm.classify(FisherClassifier, getfeatures)
+            sm.save()

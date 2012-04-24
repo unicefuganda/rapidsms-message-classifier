@@ -18,7 +18,7 @@ class ClassifierFeature(models.Model):
 class ClassifierCategory(models.Model):
 
     name = models.CharField(max_length=100,primary_key=True)
-    slug = models.SlugField()
+    slug = models.SlugField(null=True)
     count = models.IntegerField(default=0)
     department=models.ForeignKey("Department",null=True)
     flags=models.ManyToManyField(Flag,null=True)

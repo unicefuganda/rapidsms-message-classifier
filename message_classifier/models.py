@@ -35,7 +35,7 @@ class ScoredMessage(models.Model):
     score = models.FloatField(blank=True, null=True)
     trained_as = models.ForeignKey(ClassifierCategory,null=True,related_name="trained_as")
     message=models.ForeignKey(Message)
-    action=models.CharField(max_length=15,choices=(("inform","inform"),("action","action"),("no response","no response"),))
+    action=models.CharField(max_length=15,null=True)
     category=models.ForeignKey(ClassifierCategory,null=True,related_name="category")
 
     def classify(self,classifier,get_features):

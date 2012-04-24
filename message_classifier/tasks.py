@@ -42,6 +42,20 @@ def classify_excel(file):
     if file:
         workbook = open_workbook(file_contents=file)
         worksheet = workbook.sheet_by_index(0)
+        alive,_=Department.objects.create(name="alive")
+        safe,_=Department.objects.create(name="safe")
+        learning,_=Department.objects.create(name="learning")
+        social_policy,_=Department.objects.create(name="social policy")
+        other,_=Department.objects.create(name="other")
+        categories={
+            'alive':['water','health'],
+            'safe':['Orphans & Vulnerable Children','Violence Against Children'],
+            'learning':['employment','education'],
+            'social_policy':['social policy'],
+            'other':['ureport','irrerevant','poll','family & relationships','emergency','energy']
+
+
+        }
 
         if worksheet.nrows > 1:
             validated_numbers = []
@@ -51,11 +65,25 @@ def classify_excel(file):
                     2).value, worksheet.cell(
                     row, 3).value, worksheet.cell(row, 4).value, worksheet.cell(row, 5).value
                 message = Message.objects.get(pk=pk)
+                if category.lower() in categories['other']:
+                    department=other
+                elif category.lower() in categories['social_policy']:
+                    department=social_policy
+                elif category.lower() in categories['learning']:
+                    department=learning
+                elif category.lower() in categories['alive']:
+                    department=alive
+                else:
+                    department=None
                 cat, created = ClassifierCategory.objects.get_or_create(name=category)
+                if department:
+                    cat.department=department
+                    catsave()
 
                 sm, created = ScoredMessage.objects.get_or_create(message=message)
                 sm.trained_as = cat
                 sm.category = cat
+                sm.action=action.strip()
                 sm.save()
                 classifier = FisherClassifier(getfeatures)
                 sm.train(FisherClassifier, getfeatures, cat)

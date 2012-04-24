@@ -64,7 +64,10 @@ def classify_excel(file):
                     1).value, worksheet.cell(row,
                     2).value, worksheet.cell(
                     row, 3).value, worksheet.cell(row, 4).value, worksheet.cell(row, 5).value
-                message = Message.objects.get(pk=pk)
+                try:
+                    message = Message.objects.get(pk=int(pk))
+                except:
+                    continue
                 if category.lower() in categories['other']:
                     department=other
                 elif category.lower() in categories['social_policy']:

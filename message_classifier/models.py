@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from  rapidsms_httprouter.models import Message
 from contact.models import Flag
-
+from django.template.defaultfilters import slugify
 
 class ClassifierFeature(models.Model):
     feature = models.CharField( max_length=100,db_index=True)
@@ -18,12 +18,17 @@ class ClassifierFeature(models.Model):
 class ClassifierCategory(models.Model):
 
     name = models.CharField(max_length=100,primary_key=True)
+    slug = models.SlugField()
     count = models.IntegerField(default=0)
     department=models.ForeignKey("Department",null=True)
     flags=models.ManyToManyField(Flag,null=True)
 
     def __unicode__(self):
         return self.name
+    def save(self,*args,**kwargs):
+        self.slug = slugify(self.name)
+        super(ClassifierCategory, self).save(*args, **kwargs)
+
 
 
 class ScoredMessage(models.Model):

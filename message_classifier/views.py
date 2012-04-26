@@ -62,7 +62,8 @@ def message_classification(request):
 
 
     categories = ClassifierCategory.objects.all()
-    reports=Report.objects.filter(user=request.user).order_by('-date')[5:]
+    import pdb;pdb.set_trace()
+    reports=Report.objects.filter(user=request.user).order_by('-date')[:5]
     departments = Department.objects.all()
     category_form = CategoryForm()
 

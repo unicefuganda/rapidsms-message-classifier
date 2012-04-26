@@ -32,6 +32,7 @@ def message_export(start_date, end_date, cutoff, name, user, **kwargs):
             msg_export_list['pk'] = message.pk
             msg_export_list['mobile'] = message.connection.identity
             msg_export_list['text'] = message.text
+            msg_export_list['date'] = message.date.date()
             msg_export_list['category'] = ''
             messages_list.append(msg_export_list)
     ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)

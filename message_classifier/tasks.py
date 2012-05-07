@@ -43,11 +43,11 @@ def classify_excel(file):
     if file:
         workbook = open_workbook(file_contents=file)
         worksheet = workbook.sheet_by_index(0)
-        alive,_=Department.objects.get_or_create(name="alive")
-        safe,_=Department.objects.get_or_create(name="safe")
-        learning,_=Department.objects.get_or_create(name="learning")
-        social_policy,_=Department.objects.get_or_create(name="social policy")
-        other,_=Department.objects.get_or_create(name="other")
+        alive,created=Department.objects.get_or_create(name="alive")
+        safe,created=Department.objects.get_or_create(name="safe")
+        learning,created=Department.objects.get_or_create(name="learning")
+        social_policy,created=Department.objects.get_or_create(name="social policy")
+        other,created=Department.objects.get_or_create(name="other")
         categories={
             'alive':['water','health'],
             'safe':['Orphans & Vulnerable Children','Violence Against Children'],
@@ -77,12 +77,14 @@ def classify_excel(file):
                     department=learning
                 elif category.lower() in categories['alive']:
                     department=alive
+                elif category.lower() in categories['safe']:
+                    department=safe
                 else:
                     department=None
                 cat, created = ClassifierCategory.objects.get_or_create(name=category)
                 if department:
                     cat.department=department
-                    catsave()
+                    cat.save()
 
                 sm, created = ScoredMessage.objects.get_or_create(message=message)
                 sm.trained_as = cat

@@ -43,11 +43,11 @@ def classify_excel(file):
     if file:
         workbook = open_workbook(file_contents=file)
         worksheet = workbook.sheet_by_index(0)
-        alive,_=Department.objects.create(name="alive")
-        safe,_=Department.objects.create(name="safe")
-        learning,_=Department.objects.create(name="learning")
-        social_policy,_=Department.objects.create(name="social policy")
-        other,_=Department.objects.create(name="other")
+        alive,_=Department.objects.get_or_create(name="alive")
+        safe,_=Department.objects.get_or_create(name="safe")
+        learning,_=Department.objects.get_or_create(name="learning")
+        social_policy,_=Department.objects.get_or_create(name="social policy")
+        other,_=Department.objects.get_or_create(name="other")
         categories={
             'alive':['water','health'],
             'safe':['Orphans & Vulnerable Children','Violence Against Children'],

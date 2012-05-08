@@ -17,7 +17,13 @@
 
 </td>
         <td>
+            {% if object.trained_as %}
             {{object.trained_as}}
+            {% else %}
+              Machine
+            {% endif %}
+
+
         </td>
 
         <td>{{object.action}}</td>

@@ -45,6 +45,16 @@ class ScoredMessage(models.Model):
     def train(self,classifier,get_features,category):
         cl=classifier(get_features)
         return cl.train(self.message.text,category)
+    class Meta:
+        permissions = [
+            ("can_export", "can export"),
+            ("can_upload", "can upload"),
+            ("can_view_reports","cat View Reports"),
+            ("can_view_phone","can View Phone Numbers"),
+
+
+
+        ]
 
 class Report(models.Model):
     user=models.ForeignKey(User)

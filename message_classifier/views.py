@@ -73,6 +73,7 @@ def message_classification(request):
     messages =\
     ScoredMessage.objects.all().order_by('-message__date')
     columns = [('Text', True, 'message__text', SimpleSorter()),
+        ('Date', True, 'message__date', SimpleSorter()),
         ('Contact Information', True, 'message__connection__contact__name', SimpleSorter(),),
         ('Category', True, 'category', SimpleSorter(),),
         ('Trained As', True, 'trained_as', SimpleSorter(),),

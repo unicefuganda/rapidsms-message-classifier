@@ -102,10 +102,12 @@
         <div class="tab-content">
 
             <div class="tab-pane active" id="download">
+                {%if  perms.message_calssifier.can_export %}
                   <form action="" method="POST" data-remote=true id="queue_form">
                 <table>
                     <tr>
                         <td>Select Date range for messages to queue for download</td>
+
                     </tr>
 
 
@@ -118,6 +120,7 @@
 
                 </table>
                       </form>
+                {%endif%}
             </div>
 
 
@@ -176,6 +179,8 @@
 
             <div class="tab-pane" id="ready">
                 <h2>My Queued Reports</h2>
+                {%if  perms.message_classifier.can_export %}
+
                 <table width="100%" class="zebra-striped">
                     <thead>
                     <tr>
@@ -201,11 +206,12 @@
 
                 </table>
 
-
+            {%endif%}
 
             </div>
 
             <div class="tab-pane" id="poll_upload">
+                {%if  perms.message_classifier.can_upload %}
                 <form id="poll_upload_form" enctype="multipart/form-data" action="" method="POST" >
                 <table>
                     <tr>
@@ -223,10 +229,11 @@
 
                 </table>
                 </form>
+                {%endif%}
             </div>
             <div class="tab-pane" id="reports">
 
-
+                {%if  perms.message_classifier.can_export %}
                 <h2>Departments</h2>
                 <table class="zebra-striped fg" width="100%">
                     <thead>
@@ -258,8 +265,7 @@
                     </tbody>
                 </table>
 
-
-
+            {%endif%}
             </div>
         </div>
 

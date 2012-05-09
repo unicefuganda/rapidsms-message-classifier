@@ -76,7 +76,7 @@ def message_classification(request):
         ('Date', True, 'message__date', SimpleSorter()),
         ('Contact Information', True, 'message__connection__contact__name', SimpleSorter(),),
         ('Category', True, 'category', SimpleSorter(),),
-        ('Trained As', True, 'trained_as', SimpleSorter(),),
+        ('Classified By', True, 'trained_as', SimpleSorter(),),
         ('Action', True, 'action', SimpleSorter(),),
         ('Train', True, 'category', SimpleSorter(),),
 

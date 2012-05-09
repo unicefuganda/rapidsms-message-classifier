@@ -16,8 +16,8 @@ from .forms import *
 from django.contrib.auth.decorators import login_required
 from xlrd import open_workbook
 from .tasks import *
-
-
+from django.contrib.auth.decorators import user_passes_test
+can_edit = user_passes_test(lambda u: u.has_perm("message_classifier.can_edit"))
 
 @login_required
 def message_classification(request):
@@ -113,7 +113,7 @@ def train(request, message_pk, category_pk):
 
 
 
-
+@can_edit
 def edit_category(request, category_pk):
     category = ClassifierCategory.objects.get(pk=category_pk)
     if request.method == 'POST':

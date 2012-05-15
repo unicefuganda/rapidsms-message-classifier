@@ -40,10 +40,10 @@
 
             $('#msg_upload_form').submit(function() {
 
-                ajax_loading('#msg_upload_form');
+                ajax_loading('#upload');
                 $('#msg_upload_form').attr('target', 'upload_target');
 
-                $('.ajax_loading').remove();
+
             });
 
 
@@ -52,7 +52,7 @@
                             ajax_loading('#poll_upload');
                            $('#poll_upload_form').attr('target', 'upload_target2');
 
-                $('.ajax_loading').remove();
+
 
                        });
 
@@ -80,6 +80,18 @@
             });
         }
 
+        function upload_complete1()
+        {
+            $('#status_msg1').html("Successfully Uploaded file");
+            $('.ajax_loading').remove();
+            $('#msg_upload_form').find('textarea,input[type="text"],input[type="file"]').val("");
+        }
+        function upload_complete2()
+        {
+            $('#status_msg2').html("Successfully Uploaded file");
+            $('.ajax_loading').remove();
+            $('#poll_upload_form').find('textarea,input[type="text"],input[type="file"]').val("");
+        }
 
     </script>
 
@@ -130,6 +142,8 @@
                     <tr>
                         <td>Upload Classified Messages</td>
                     </tr>
+<tr><td id="status_msg1"></td></tr>
+
 
                         {{ upload_form.as_table }}
                         <tr>
@@ -137,7 +151,7 @@
                         </tr>
 
                 </table>
-                    <iframe id="upload_target" name="upload_target" src="" style="display:none">&nbsp;</iframe>
+                    <iframe id="upload_target" name="upload_target" src="" onLoad="upload_complete1();"style="display:none">&nbsp;</iframe>
                 </form>
             </div>
             <div class="tab-pane" id="category">
@@ -221,10 +235,11 @@
 
                         <tr>
                             <td>Upload Poll Responses File</td>
+                            <td id="status_msg2"></td>
                             <td>{{ poll_form.excel }}</td>
 
                            <tr> <td><input type="submit" value="upload" ></td></tr>
-                            <iframe id="upload_target2" name="upload_target2" src="" style="display:none">&nbsp;</iframe>
+                            <iframe id="upload_target2" name="upload_target2" src="" onLoad="upload_complete2();" style="display:none">&nbsp;</iframe>
                         </tr>
 
                 </table>

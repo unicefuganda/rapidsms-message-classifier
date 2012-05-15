@@ -37,14 +37,14 @@ def message_classification(request):
 
                     message = classify_excel.delay(excel)
                     print message
-                    return HttpResponse(status=200)
+                    return HttpResponse("successfully uploaded file")
             if poll_form.is_valid():
                 if request.FILES.get('excel'):
                     excel = request.FILES['excel'].read()
                     poll=poll_form.cleaned_data['poll']
                     message = upload_responses.delay(excel,poll)
                     print message
-                    return HttpResponse(status=200)
+                    return HttpResponse("successfully uploaded file")
 
 
 

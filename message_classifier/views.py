@@ -56,7 +56,7 @@ def message_classification(request):
 
                 result = message_export.delay(msg_form.cleaned_data['startdate'], msg_form.cleaned_data['enddate'],
                                                       msg_form.cleaned_data.get('size', 30), msg_form.cleaned_data['name'],
-                                                      request.user)
+                                                      request.user,msg_form.cleaned_data.get('contains',None))
                 print result
                 return HttpResponse(status=200)
 

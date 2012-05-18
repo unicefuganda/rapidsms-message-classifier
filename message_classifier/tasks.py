@@ -17,14 +17,17 @@ from poll.models import ResponseCategory, Poll, Response
 
 
 @task
-def message_export(start_date, end_date, cutoff, name, user, **kwargs):
+def message_export(start_date, end_date, cutoff, name, user,contains, **kwargs):
     root_path = os.path.dirname(os.path.realpath(__file__))
-    messages = Message.objects.filter(date__gte=start_date, date__lte=end_date)
     excel_file_path = os.path.join(os.path.join(os.path.join(root_path, 'static'), 'spreadsheets'), '%s.zip' % name)
     link = "/static/message_classifier/spreadsheets/" + name + ".zip"
     Report.objects.create(title=name, user=user, link=link)
     messages = Message.objects.filter(direction="I").exclude(application="script").filter(
         date__range=(start_date, end_date))
+    if contains:
+        or_searches=contains.split('or')
+        search_reg="|".join(or_searches)
+        messages=messages.filter(text__iregex=".*\m(%s)\y.*"%search_reg).distinct()
     messages_list = []
     for message in messages:
         if len(message.text) > cutoff:
@@ -39,9 +42,9 @@ def message_export(start_date, end_date, cutoff, name, user, **kwargs):
 
 
 @task
-def classify_excel(file):
-    if file:
-        workbook = open_workbook(file_contents=file)
+def classify_excel(excel_file):
+    if excel_file:
+        workbook = open_workbook(file_contents=excel_file)
         worksheet = workbook.sheet_by_index(0)
         alive,created=Department.objects.get_or_create(name="alive")
         safe,created=Department.objects.get_or_create(name="safe")
@@ -105,9 +108,9 @@ def classify_excel(file):
 
 
 @task
-def upload_responses(file, poll):
-    if file:
-        workbook = open_workbook(file_contents=file)
+def upload_responses(excel_file, poll):
+    if excel_file:
+        workbook = open_workbook(file_contents=excel_file)
         worksheet = workbook.sheet_by_index(0)
         if worksheet.nrows > 1:
             response_lst = []

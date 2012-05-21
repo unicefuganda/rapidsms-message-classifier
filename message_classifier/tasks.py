@@ -120,7 +120,7 @@ def upload_responses(excel_file, poll):
 
                 contact_pk, message_pk, category = worksheet.cell(row, 0).value, worksheet.cell(row,
                     1).value, worksheet.cell(row,
-                    12).value
+                    14).value
                 try:
                     res=Response.objects.get(message__pk=int(message_pk))
                     res.poll=poll

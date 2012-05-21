@@ -13,7 +13,7 @@ from .utils import *
 import datetime
 from celery.task.schedules import crontab
 from celery.decorators import periodic_task
-from poll.models import ResponseCategory, Poll, Response
+from poll.models import ResponseCategory, Poll, Response,Category
 
 def create_tags(message):
     pass
@@ -132,7 +132,7 @@ def upload_responses(excel_file, poll):
                     rc = ResponseCategory.objects.get(response__message__pk=int(message_pk))
                     rc.category = poll.categories.get(name=category.strip())
                     rc.save()
-                except ResponseCategory.DoesNotExist:
+                except (ResponseCategory.DoesNotExist,Category.DoesNotExist):
                     continue
 
             responses = poll.responses.exclude(message__pk__in=response_pks).delete()

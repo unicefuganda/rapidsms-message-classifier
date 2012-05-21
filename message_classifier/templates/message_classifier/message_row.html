@@ -46,7 +46,7 @@ Train As
 </a>
 <ul class="dropdown-menu">
     {% for cat in categories %}
-<li><a href="javascript:void(0)" onclick="train('{{ object.pk}}','{{ cat.pk }}')">{{ cat.name }}</a></li>
+<li><a href="javascript:void(0)" onclick="train('{{ object.pk}}','{{ cat.slug }}')">{{ cat.name }}</a></li>
 {% endfor %}
 </ul>
 </li>

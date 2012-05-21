@@ -130,12 +130,13 @@ def upload_responses(excel_file, poll):
                 response_pks.append(int(message_pk))
                 try:
                     rc = ResponseCategory.objects.get(response__message__pk=int(message_pk))
-                    rc.category = poll.categories.get(name=category)
+                    rc.category = poll.categories.get(name=category.strip())
                     rc.save()
                 except ResponseCategory.DoesNotExist:
                     continue
 
             responses = poll.responses.exclude(message__pk__in=response_pks).delete()
+        poll.reprocess_responses()
 
 
 
@@ -148,7 +149,7 @@ def generate_reports():
     departments=Department.objects.all()
     for department in departments:
         excel_file_path = os.path.join(os.path.join(os.path.join(root_path, 'static'), 'spreadsheets'),
-            '%s.zip' % department.slug)
+            '%s.zip' % department.name)
         messages_list = []
         messages = ScoredMessage.objects.filter(category__department=department)
         for sm in messages:

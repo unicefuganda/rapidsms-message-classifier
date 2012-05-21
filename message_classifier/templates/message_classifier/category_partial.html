@@ -1,5 +1,5 @@
 <h2>Editing {{ category.name }} </h2>
-<form method="Post" action="{% url  message_classifier.views.edit_category category.pk %}" data-remote=true>
+<form method="Post" action="{% url  message_classifier.views.edit_category category.slug %}" data-remote=true>
     <table>
 
     {{ category_form.as_table }}

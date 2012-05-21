@@ -15,7 +15,8 @@ from celery.task.schedules import crontab
 from celery.decorators import periodic_task
 from poll.models import ResponseCategory, Poll, Response
 
-
+def create_tags(message):
+    pass
 @task
 def message_export(start_date, end_date, cutoff, name, user,contains, **kwargs):
     root_path = os.path.dirname(os.path.realpath(__file__))
@@ -93,7 +94,7 @@ def classify_excel(excel_file):
                 sm, created = ScoredMessage.objects.get_or_create(message=message)
                 sm.trained_as = cat
                 sm.category = cat
-                sm.action=action.strip()
+                sm.action=action
                 sm.save()
                 classifier = FisherClassifier(getfeatures)
                 sm.train(FisherClassifier, getfeatures, cat)
@@ -129,7 +130,7 @@ def upload_responses(excel_file, poll):
                 response_pks.append(int(message_pk))
                 try:
                     rc = ResponseCategory.objects.get(response__message__pk=int(message_pk))
-                    rc.category = poll.categories.get(name=category.strip())
+                    rc.category = poll.categories.get(name=category)
                     rc.save()
                 except ResponseCategory.DoesNotExist:
                     continue
@@ -144,25 +145,41 @@ def upload_responses(excel_file, poll):
 def generate_reports():
     root_path = os.path.dirname(os.path.realpath(__file__))
     categories = ClassifierCategory.objects.all()
+    departments=Department.objects.all()
+    for department in departments:
+        excel_file_path = os.path.join(os.path.join(os.path.join(root_path, 'static'), 'spreadsheets'),
+            '%s.zip' % department.slug)
+        messages_list = []
+        messages = ScoredMessage.objects.filter(category__department=department)
+        for sm in messages:
+            msg_export_list = SortedDict()
+            msg_export_list['pk'] = sm.message.pk
+            msg_export_list['mobile'] = sm.message.connection.identity
+            msg_export_list['text'] = sm.message.text
+            msg_export_list['category'] = sm.message.category.name
+            messages_list.append(msg_export_list)
+        ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
+
 
     for category in categories:
         excel_file_path = os.path.join(os.path.join(os.path.join(root_path, 'static'), 'spreadsheets'),
-            '%s.zip' % category.name)
+            '%s.zip' % category.slug)
         messages_list = []
         messages = ScoredMessage.objects.filter(category=category)
-        for message in messages:
+        for sm in messages:
             msg_export_list = SortedDict()
-            msg_export_list['pk'] = message.pk
-            msg_export_list['mobile'] = message.connection.identity
-            msg_export_list['text'] = message.text
-            msg_export_list['category'] = message.category.name
+            msg_export_list['pk'] = sm.message.pk
+            msg_export_list['mobile'] = sm.message.connection.identity
+            msg_export_list['text'] = sm.message.text
+            msg_export_list['category'] = sm.message.category.name
             messages_list.append(msg_export_list)
         ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
+
 
 #run eve
 @periodic_task(run_every=crontab(hour=4, minute=30, day_of_week='*'))
 def classify_messages():
-    classified_messages = ScoredMessage.objects.values_list('message')
+    classified_messages = ScoredMessage.objects.filter(trained_as=None).values_list('message')
     messages = Message.objects.exclude(pk__in=classified_messages).filter(direction="I")
     classifier = FisherClassifier(getfeatures)
     for message in messages:
@@ -173,7 +190,7 @@ def classify_messages():
 
 @periodic_task(run_every=crontab(hour=12, minute=30, day_of_week='*'))
 def reclassify_all():
-    classified_messages = ScoredMessage.objects.values_list('message')
+    classified_messages = ScoredMessage.objects.filter(trained_as=None).values_list('message')
     messages = Message.objects.filter(pk__in=classified_messages)
     classifier = FisherClassifier(getfeatures)
     for message in messages:

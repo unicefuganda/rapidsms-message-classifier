@@ -263,7 +263,7 @@
                         <tr>
                             <td><h3>{{ department.name }}</h3></td>
                             <td></td>
-                            <td><a href="" class="btn">Downlod {{ department.name }} Messages</a></td>
+                            <td><a href="{{ MEDIA_URL }}message_classifier/spreadsheets/{{department.name}}.zip" class="btn">Downlod {{ department.name }} Messages</a></td>
                         <tr>
                             <td></td>
                             <td>{{ department.name }} Categories</td>
@@ -273,7 +273,7 @@
                             <tr>
                                 <td></td>
                                 <td>{{ cat }}</td>
-                                <td><a class="btn" href="">Download {{ cat }} messages</a></td>
+                                <td><a class="btn" href="{{ MEDIA_URL }}message_classifier/spreadsheets/{{cat.slug}}.zip"">Download {{ cat }} messages</a></td>
                             </tr>
                         {% endfor %}
                     {% endfor %}

@@ -106,7 +106,7 @@ def message_classification(request):
 
 def train(request, message_pk, category_pk):
     msg = ScoredMessage.objects.get(pk=message_pk)
-    cat = ClassifierCategory.objects.get(pk=category_pk)
+    cat = ClassifierCategory.objects.get(slug=category_pk)
     classifier = FisherClassifier(getfeatures)
     msg.train(FisherClassifier, getfeatures, cat)
     return HttpResponse(cat.name)
@@ -115,7 +115,7 @@ def train(request, message_pk, category_pk):
 
 @can_edit
 def edit_category(request, category_pk):
-    category = ClassifierCategory.objects.get(pk=category_pk)
+    category = ClassifierCategory.objects.get(slug=category_pk)
     if request.method == 'POST':
         category_form = CategoryForm(request.POST, instance=category)
         if category_form.is_valid():

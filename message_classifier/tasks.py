@@ -85,7 +85,10 @@ def classify_excel(excel_file):
                     department=safe
                 else:
                     department=None
-                cat, created = ClassifierCategory.objects.get_or_create(name=category)
+                try:
+                    cat = ClassifierCategory.objects.get(name__icontains=category)
+                except:
+                    cat= ClassifierCategory.objects.create(name=category)
                 if department:
                     cat.department=department
                     cat.save()
@@ -157,9 +160,10 @@ def generate_reports():
             msg_export_list['pk'] = sm.message.pk
             msg_export_list['mobile'] = sm.message.connection.identity
             msg_export_list['text'] = sm.message.text
-            msg_export_list['category'] = sm.message.category.name
+            msg_export_list['category'] = sm.category.name
             messages_list.append(msg_export_list)
-        ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
+        if len(messages_list):
+            ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
 
 
     for category in categories:
@@ -172,13 +176,13 @@ def generate_reports():
             msg_export_list['pk'] = sm.message.pk
             msg_export_list['mobile'] = sm.message.connection.identity
             msg_export_list['text'] = sm.message.text
-            msg_export_list['category'] = sm.message.category.name
+            msg_export_list['category'] = sm.category.name
             messages_list.append(msg_export_list)
         ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
 
 
 #run eve
-@periodic_task(run_every=crontab(hour=4, minute=30, day_of_week='*'))
+@periodic_task(run_every=crontab(hour=23, minute=30, day_of_week='*'))
 def classify_messages():
     classified_messages = ScoredMessage.objects.filter(trained_as=None).values_list('message')
     messages = Message.objects.exclude(pk__in=classified_messages).filter(direction="I")

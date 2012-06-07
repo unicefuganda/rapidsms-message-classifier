@@ -62,6 +62,7 @@ def message_classification(request):
 
 
     categories = ClassifierCategory.objects.all()
+    actions=ScoredMessage.objects.values_list('action',flat=True).distinct()
     reports=Report.objects.filter(user=request.user).order_by('-date')[:5]
     departments = Department.objects.all()
     category_form = CategoryForm()
@@ -101,12 +102,13 @@ def message_classification(request):
         category_form=category_form,
         reports=reports,
         poll_form=poll_form,
+        actions=actions,
         )
 
 
-def train(request, message_pk, category_pk):
+def train(request, message_pk, slug):
     msg = ScoredMessage.objects.get(pk=message_pk)
-    cat = ClassifierCategory.objects.get(slug=category_pk)
+    cat = ClassifierCategory.objects.get(slug=slug)
     classifier = FisherClassifier(getfeatures)
     msg.train(FisherClassifier, getfeatures, cat)
     return HttpResponse(cat.name)
@@ -129,3 +131,8 @@ def edit_category(request, category_pk):
                               context_instance=RequestContext(request))
 
 
+def edit_action(request,message_pk,action):
+    msg = ScoredMessage.objects.get(pk=message_pk)
+    msg.action=action
+    msg.save()
+    return HttpResponse(action)

@@ -6,52 +6,71 @@
 
     {{ object.message.text }}
 
-   
+
 </td>
 <td>{{object.message.date}}</td>
-    <td>
-        {%if  perms.rapidsms.view_numbers %}
-        {{ object.message.connection.identity }}
-        {%else%}
-        Redacted
-        {%endif%}
-    </td>
+<td>
+    {%if perms.rapidsms.view_numbers %}
+    {{ object.message.connection.identity }}
+    {%else%}
+    Redacted
+    {%endif%}
+</td>
 
 <td id="cat_{{ object.pk }}">
-    
-        {{ object.category }}
+
+    {{ object.category }}
 
 </td>
-        <td>
-            {% if object.trained_as %}
-            Human
-            {% else %}
-              Machine
-            {% endif %}
+<td>
+    {% if object.trained_as %}
+    Human
+    {% else %}
+    Machine
+    {% endif %}
 
 
-        </td>
+</td>
 
-        <td>{{object.action}}</td>
+<td>
+
+    <ul>
+
+        <li class="dropdown" id="menu2">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+                <span id="act_{{ object.pk }}">{{object.action}}</span>
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                {% for act in actions %}
+                <li><a href="javascript:void(0)" onclick="change_action('{{ object.pk}}','{{ act }}')">{{ act }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+    </ul>
+
+
+
+
 <td>
 
 
+    <ul>
 
-     <ul >
-
-<li class="dropdown" id="menu1">
-<a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-Train As
-<b class="caret"></b>
-</a>
-<ul class="dropdown-menu">
-    {% for cat in categories %}
-<li><a href="javascript:void(0)" onclick="train('{{ object.pk}}','{{ cat.slug }}')">{{ cat.name }}</a></li>
-{% endfor %}
-</ul>
-</li>
-
-
+        <li class="dropdown" id="menu1">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+                Train As
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                {% for cat in categories %}
+                <li><a href="javascript:void(0)" onclick="train('{{ object.pk}}','{{ cat.slug }}')">{{ cat.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+    </ul>
 
 
 </td>

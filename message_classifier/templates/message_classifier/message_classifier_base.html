@@ -61,13 +61,23 @@
         });
         function train(message, category) {
             elem = "#cat_" + message;
-            console.log(elem);
             url = "/classifier/" + message + "/train/" + category + "/";
-            console.log(url);
+
             ajax_loading(elem);
             $(elem).load(url, function() {
                 $('.ajax_loading').remove();
             });
+        }
+
+        function change_action(message,action){
+            elem = "#act_" + message;
+            url = "/classifier/" + message + "/change_action/" + action + "/";
+
+            ajax_loading(elem);
+            $(elem).load(url, function() {
+                $('.ajax_loading').remove();
+            });
+
         }
 
         function edit_category(category) {
@@ -172,6 +182,7 @@
 
             <div class="tab-pane" id="category_edit">
                 <h2>Categories</h2>
+
                 <table width="50%">
 
                     {% for category in categories %}

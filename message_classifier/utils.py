@@ -3,18 +3,35 @@ import math
 from message_classifier.models import * #ClassifierFeature,ClassifierCategory,ScoredMessage
 from django.db.models import F
 from django.db.models import Sum
+from nltk.corpus import stopwords
 from django.db import transaction
+from .settings import *
+from nltk import bigrams,trigrams
 
+
+def ngrams(message,n):
+    regex=re.compile('\\W*')
+    words=regex.split(message)
+    if n==1:
+        return words
+    elif n == 2:
+        return [a +" "+b for a,b in bigrams(words)]
+    elif n== 3:
+        return [a +" "+b+" "+c for a,b,c in trigrams(words)]
+    else:
+        return []
 
 def getfeatures(message):
     regex=re.compile('\\W*')
+    stop_words = stopwords.words('english')+STOP_WORDS
     # Split the words by non-alpha characters
     words=[s.lower() for s in regex.split(message)
-          if len(s)>2 and len(s)<20]
+          if not s in stop_words]
     #use the message sender as a feature
     #words.append(message.connection)
 
     # Return the unique set of words only
+    words=words+ngrams(message,2)+ngrams(message,3)
     return dict([(w,1) for w in words])
 
 

@@ -5,16 +5,10 @@ from django.shortcuts import render_to_response, HttpResponse
 from django.template import RequestContext
 
 from .utils import *
-from rapidsms_httprouter.models import Message
 from generic.views import generic
-from rapidsms_httprouter.models import Message
 from generic.sorters import SimpleSorter, TupleSorter
-import datetime, time
-from generic.reporting.forms import DateRangeForm
-from .models import *
 from .forms import *
 from django.contrib.auth.decorators import login_required
-from xlrd import open_workbook
 from .tasks import *
 from django.contrib.auth.decorators import user_passes_test
 can_edit = user_passes_test(lambda u: u.has_perm("message_classifier.can_edit"))
@@ -92,6 +86,8 @@ def message_classification(request):
         selectable=False,
         partial_row='message_classifier/message_row.html',
         base_template='message_classifier/message_classifier_base.html',
+        paginator_template='ureport/partials/new_pagination.html',
+        paginator_func=ureport_paginate,
         columns=columns,
         sort_column='date',
         sort_ascending=False,

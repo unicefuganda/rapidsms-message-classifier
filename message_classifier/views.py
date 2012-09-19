@@ -11,6 +11,8 @@ from .forms import *
 from django.contrib.auth.decorators import login_required
 from .tasks import *
 from django.contrib.auth.decorators import user_passes_test
+from ureport.views.utils.paginator import ureport_paginate
+
 can_edit = user_passes_test(lambda u: u.has_perm("message_classifier.can_edit"))
 
 @login_required

@@ -45,16 +45,21 @@ def message_classification(request):
 
 
         if request.POST:
+
             msg_form = filterForm(request.POST)
 
 
             if msg_form.is_valid():
 
                 result = message_export.delay(msg_form.cleaned_data['startdate'], msg_form.cleaned_data['enddate'],
-                                                      msg_form.cleaned_data.get('size', 30), msg_form.cleaned_data['name'],
+                                                      msg_form.cleaned_data.get('size',None), msg_form.cleaned_data['name'],
                                                       request.user,msg_form.cleaned_data.get('contains',None))
                 print result
                 return HttpResponse(status=200)
+            else:
+                msg_form = filterForm(request.POST)
+
+
 
 
     categories = ClassifierCategory.objects.all()

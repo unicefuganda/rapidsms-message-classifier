@@ -15,6 +15,7 @@ from celery.task.schedules import crontab
 from celery.decorators import periodic_task
 from poll.models import ResponseCategory, Poll, Response,Category
 
+
 def create_tags(message):
     pass
 @task
@@ -31,7 +32,9 @@ def message_export(start_date, end_date, cutoff, name, user,contains, **kwargs):
         messages=messages.filter(text__iregex=".*\m(%s)\y.*"%search_reg).distinct()
     messages_list = []
     for message in messages:
-        if len(message.text) > cutoff:
+        if cutoff and len(message.text) > cutoff:
+            pass
+        else:
             msg_export_list = SortedDict()
             msg_export_list['pk'] = message.pk
             msg_export_list['mobile'] = message.connection.identity

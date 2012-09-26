@@ -15,7 +15,7 @@ class filterForm(forms.Form):
                                                  'size': '15'
                                              }))
     name=forms.CharField(max_length=30,required=True)
-    size=forms.IntegerField(label="message size cuttoff")
+    size=forms.IntegerField(label="message size cuttoff",required=False)
     contains=forms.CharField(max_length=200,required=False,help_text="put series of words separated by or e.g hiv or aids")
 
 

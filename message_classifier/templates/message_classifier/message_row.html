@@ -9,13 +9,6 @@
 
 </td>
 <td>{{object.message.date}}</td>
-<td>
-    {%if perms.rapidsms.view_numbers %}
-    {{ object.message.connection.identity }}
-    {%else%}
-    Redacted
-    {%endif%}
-</td>
 
 <td id="cat_{{ object.pk }}">
 

@@ -58,6 +58,7 @@ def message_classification(request):
     columns = [('Identifier', True, 'message__connection_id', SimpleSorter()),
                ('Text', True, 'msg__text', SimpleSorter()),
                ('Date', True, 'msg__date', SimpleSorter()),
+               ('Score', True, 'score', SimpleSorter()),
                ('Category', True, 'category', SimpleSorter(),)]
 
     return generic(
@@ -71,7 +72,7 @@ def message_classification(request):
         paginator_template='ureport/partials/new_pagination.html',
         paginator_func=ureport_paginate,
         columns=columns,
-        sort_column='date',
+        sort_column='score',
         msg_form=msg_form,
         upload_form=upload_form,
         filter_forms=[ChooseCategoryForm]

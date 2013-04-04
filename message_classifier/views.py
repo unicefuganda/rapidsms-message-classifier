@@ -73,6 +73,7 @@ def message_classification(request):
         paginator_func=ureport_paginate,
         columns=columns,
         sort_column='score',
+        sort_ascending=False,
         msg_form=msg_form,
         upload_form=upload_form,
         filter_forms=[ChooseCategoryForm]

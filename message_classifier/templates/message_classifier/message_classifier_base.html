@@ -61,6 +61,16 @@
 
             
         });
+
+        function filter(elem) {
+            form = $(elem).parents("form");
+            form_data = form.serializeArray();
+            $('#div_results_loading').show();
+            $('#object_list').load("./", form_data, function() {
+                $('#div_results_loading').hide();
+            });
+        }
+
         function train(message, category) {
             elem = "#cat_" + message;
             url = "/classifier/" + message + "/train/" + category + "/";

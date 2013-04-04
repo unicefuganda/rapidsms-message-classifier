@@ -37,19 +37,13 @@ class PollUploadForm(forms.Form):
                             required=False)
 
 
-class CategoryForm(forms.ModelForm):
-    class Meta:
-        model = ClassifierCategory
-        exclude = ("count",)
-
-
 class ChooseCategoryForm(FilterForm):
     CATEGORIES = [("", "-----------")] + [(pk, name.capitalize()) for pk, name in
-                                          list(IbmCategory.objects.values_list('category_id', 'name'))]
+                                          list(IbmCategory.objects.values_list('category_id', 'name').order_by('name'))]
     category = forms.ChoiceField(choices=CATEGORIES)
 
     def filter(self, request, queryset):
         pk = self.cleaned_data['category']
         if not pk or pk == "":
             return queryset
-        return queryset.filter(category_id=pk)
+        return queryset.filter(category__category_id=pk)

@@ -1,10 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response, HttpResponse
-from django.template import RequestContext
-from ureport.forms import SearchResponsesForm
-
+from django.shortcuts import HttpResponse
 from .utils import *
 from generic.views import generic
 from generic.sorters import SimpleSorter
@@ -22,8 +19,6 @@ def message_classification(request):
     if request.method == "POST" and not request.is_ajax():
 
         if request.FILES:
-
-
             upload_form = ExcelUploadForm(request.FILES)
             poll_form = PollUploadForm(request.POST, request.FILES)
 
@@ -78,33 +73,3 @@ def message_classification(request):
         upload_form=upload_form,
         filter_forms=[ChooseCategoryForm]
     )
-
-
-def train(request, message_pk, slug):
-    msg = ScoredMessage.objects.get(pk=message_pk)
-    cat = ClassifierCategory.objects.get(slug=slug)
-    msg.train(FisherClassifier, getfeatures, cat)
-    return HttpResponse(cat.name)
-
-
-@can_edit
-def edit_category(request, category_pk):
-    category = ClassifierCategory.objects.get(slug=category_pk)
-    if request.method == 'POST':
-        category_form = CategoryForm(request.POST, instance=category)
-        if category_form.is_valid():
-            category_form.save()
-            return HttpResponse("Saved")
-
-    category_form = CategoryForm(instance=category)
-
-    return render_to_response('message_classifier/category_partial.html',
-                              dict(category_form=category_form, category=category),
-                              context_instance=RequestContext(request))
-
-
-def edit_action(request, message_pk, action):
-    msg = ScoredMessage.objects.get(pk=message_pk)
-    msg.action = action
-    msg.save()
-    return HttpResponse(action)

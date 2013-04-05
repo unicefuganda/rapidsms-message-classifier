@@ -2,16 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import HttpResponse
-from .utils import *
+from forms import ExcelUploadForm, PollUploadForm, filterForm, ChooseCategoryForm, AssignActionForm, ChooseActionForm, \
+    DeleteMessagesForm
 from generic.views import generic
 from generic.sorters import SimpleSorter
-from .forms import *
 from django.contrib.auth.decorators import login_required
-from .tasks import *
-from django.contrib.auth.decorators import user_passes_test
 from ureport.views.utils.paginator import ureport_paginate
-
-can_edit = user_passes_test(lambda u: u.has_perm("message_classifier.can_edit"))
+from models import IbmMsgCategory
 
 
 @login_required
@@ -24,17 +21,17 @@ def message_classification(request):
 
             if upload_form.is_valid():
                 if request.FILES.get('excel_file'):
-                    excel = request.FILES['excel_file'].read()
+                    # excel = request.FILES['excel_file'].read()
 
-                    message = classify_excel.delay(excel)
-                    print message
+                    # message = classify_excel.delay(excel)
+                    # print message
                     return HttpResponse("successfully uploaded file")
             if poll_form.is_valid():
                 if request.FILES.get('excel'):
-                    excel = request.FILES['excel'].read()
-                    poll = poll_form.cleaned_data['poll']
-                    message = upload_responses.delay(excel, poll)
-                    print message
+                    # excel = request.FILES['excel'].read()
+                    # poll = poll_form.cleaned_data['poll']
+                    # message = upload_responses.delay(excel, poll)
+                    # print message
                     return HttpResponse("successfully uploaded file")
 
         if request.POST:
@@ -42,9 +39,9 @@ def message_classification(request):
             msg_form = filterForm(request.POST)
 
             if msg_form.is_valid():
-                message_export.delay(msg_form.cleaned_data['startdate'], msg_form.cleaned_data['enddate'],
-                                     msg_form.cleaned_data.get('size', None), msg_form.cleaned_data['name'],
-                                     request.user, msg_form.cleaned_data.get('contains', None))
+                # message_export.delay(msg_form.cleaned_data['startdate'], msg_form.cleaned_data['enddate'],
+                #                      msg_form.cleaned_data.get('size', None), msg_form.cleaned_data['name'],
+                #                      request.user, msg_form.cleaned_data.get('contains', None))
                 return HttpResponse(status=200)
 
     msg_form = filterForm()
@@ -71,5 +68,6 @@ def message_classification(request):
         sort_ascending=False,
         msg_form=msg_form,
         upload_form=upload_form,
-        filter_forms=[ChooseCategoryForm]
+        filter_forms=[ChooseCategoryForm, ChooseActionForm],
+        action_forms=[AssignActionForm, DeleteMessagesForm]
     )

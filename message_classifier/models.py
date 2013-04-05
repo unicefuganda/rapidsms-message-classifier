@@ -1,5 +1,6 @@
 from django.db import models
 from  rapidsms_httprouter.models import Message
+from django.conf import settings
 
 
 class IbmCategory(models.Model):
@@ -13,7 +14,7 @@ class IbmCategory(models.Model):
         raise NotImplementedError("Please don't try to write stuff to this table... Ok?")
 
     class Meta:
-        managed = False
+        managed = getattr(settings, 'IBM_TABLES_MANAGED', False)
         db_table = 'ibm_category'
         app_label = 'message_classifier'
 
@@ -29,7 +30,7 @@ class IbmAction(models.Model):
         raise NotImplementedError("Please don't try to write stuff to this table... Ok?")
 
     class Meta:
-        managed = False
+        managed = getattr(settings, 'IBM_TABLES_MANAGED', False)
         db_table = 'ibm_action'
         app_label = 'message_classifier'
 
@@ -47,6 +48,6 @@ class IbmMsgCategory(models.Model):
         return msg + " | " + self.category.name
 
     class Meta:
-        managed = False
+        managed = getattr(settings, 'IBM_TABLES_MANAGED', False)
         db_table = 'ibm_msg_category'
         app_label = 'message_classifier'

@@ -12,6 +12,7 @@
     <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}contact/stylesheets/messages.css"/>
     <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/message_log.css"/>
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}generic/stylesheets/jquery-ui-1.7.3.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}message_classifier/stylesheets/rating.css">
 {% endblock %}
 {% block extra_js %}
 
@@ -71,49 +72,8 @@
             });
         }
 
-        function train(message, category) {
-            elem = "#cat_" + message;
-            url = "/classifier/" + message + "/train/" + category + "/";
 
-            ajax_loading(elem);
-            $(elem).load(url, function() {
-                $('.ajax_loading').remove();
-            });
-        }
 
-        function change_action(message,action){
-            elem = "#act_" + message;
-            url = "/classifier/" + message + "/change_action/" + action + "/";
-
-            ajax_loading(elem);
-            $(elem).load(url, function() {
-                $('.ajax_loading').remove();
-            });
-
-        }
-
-        function edit_category(category) {
-            elem = "#edit_category";
-            url = "/classifier/category/" + category + "/edit/";
-            ajax_loading(elem);
-            $(elem).load(url, function() {
-                $('.ajax_loading').remove();
-
-            });
-        }
-
-        function upload_complete1()
-        {
-            $('#status_msg1').html("Successfully Uploaded file");
-            $('.ajax_loading').remove();
-            $('#msg_upload_form').find('textarea,input[type="text"],input[type="file"]').val("");
-        }
-        function upload_complete2()
-        {
-            $('#status_msg2').html("Successfully Uploaded file");
-            $('.ajax_loading').remove();
-            $('#poll_upload_form').find('textarea,input[type="text"],input[type="file"]').val("");
-        }
 
     </script>
 

@@ -51,7 +51,9 @@ def message_classification(request):
                ('Text', True, 'msg__text', SimpleSorter()),
                ('Date', True, 'msg__date', SimpleSorter()),
                ('Score', True, 'score', SimpleSorter()),
-               ('Category', True, 'category', SimpleSorter(),)]
+               ('Category', True, 'category', SimpleSorter(),),
+               ('Action', True, 'action', SimpleSorter(),),
+               ('Rating', False, '', None)]
 
     return generic(
         request,

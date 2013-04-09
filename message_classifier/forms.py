@@ -45,7 +45,7 @@ class ChooseCategoryForm(FilterForm):
         pk = self.cleaned_data['category']
         if not pk or pk == "":
             return queryset
-        return queryset.filter(category__category_id=pk).order_by('-score')
+        return queryset.filter(category__category_id=pk).order_by('-score', 'msg__date')
 
 
 class ChooseActionForm(FilterForm):
@@ -58,7 +58,7 @@ class ChooseActionForm(FilterForm):
         pk = self.cleaned_data['message_action']
         if not pk or pk == "":
             return queryset
-        return queryset.filter(action__action_id=pk).order_by('-score').distinct('msg')
+        return queryset.filter(action__action_id=pk).order_by('-score', 'msg__date')
 
 
 class AssignActionForm(ActionForm):
@@ -83,4 +83,4 @@ class DeleteMessagesForm(ActionForm):
         message_ids = set([m.msg_id for m in results])
         messages = IbmMsgCategory.objects.filter(msg__pk__in=message_ids)
         messages.delete()
-        return "%d Messages were deleted"%message_ids
+        return "%d Messages were deleted"%message_ids, 'success'

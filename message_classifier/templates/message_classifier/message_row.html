@@ -1,6 +1,7 @@
 {% extends 'generic/partials/partial_row.html' %}
 {% block remaining_row_content %}
 {% load extra_tags %}
+{% load ureport %}
 <td>{{ object.msg.connection_id }}</td>
 <td>
 
@@ -18,4 +19,39 @@
     {{ object.category }}
 
 </td>
+<td>{{ object.action }}</td>
+
+    <td>
+
+
+        <ul class='star-rating' id="rate{{object.msg.pk}}">
+
+            {%for d in  object.msg.details.all%}
+                {% if d.attribute.name == "rating" %}
+
+
+                    <li><a href='javascript:void(0)' class="rate{{d.value}}"
+
+                           title="{{d.description}}">{{d.value}} </a></li>
+                    {% set alert = True %}
+                {%endif%}
+            {%endfor%}
+
+            {%if not alert%}
+
+                <li><a href='/alerts/?rating=1&msg={{object.msg.pk}}'  onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                       data-remote=true title='Requires Attention' class='one-star star'>1</a></li>
+                <li><a href='/alerts/?rating=2&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                       data-remote=true title='Moderate' class='two-stars star'>2</a></li>
+                <li><a href='/alerts/?rating=3&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                       data-remote=true title='Important' class='three-stars star'>3</a></li>
+                <li><a href='/alerts/?rating=4&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                       data-remote=true title='Urgent' class='four-stars star star'>4</a></li>
+                <li><a href='/alerts/?rating=5&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                       data-remote=true title='Very Urgent' class='five-stars star '>5</a></li>
+            {%endif%}
+
+        </ul>
+
+    </td>
 {% endblock %}

@@ -5,7 +5,7 @@ from poll.models import Poll
 from generic.forms import FilterForm, ActionForm
 
 
-class filterForm(forms.Form):
+class QueueForm(forms.Form):
     startdate = forms.DateField(('%d/%m/%Y',), label='Start Date', required=False,
                                 widget=forms.DateTimeInput(format='%d/%m/%Y', attrs={
                                     'class': 'input',
@@ -20,8 +20,6 @@ class filterForm(forms.Form):
                               }))
     name = forms.CharField(max_length=30, required=True)
     size = forms.IntegerField(label="message size cuttoff", required=False)
-    contains = forms.CharField(max_length=200, required=False,
-                               help_text="put series of words separated by or e.g hiv or aids")
 
 
 class ExcelUploadForm(forms.Form):

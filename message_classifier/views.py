@@ -26,7 +26,7 @@ def message_classification(request):
         queue_form = QueueForm(request.POST)
         if queue_form.is_valid():
 
-            queue_form.queue_export(request, queryset)
+            queue_form.queue_export(request.user.username, request.get_host(), queryset)
             return HttpResponse("All is good... You will receive an email when export is ready")
 
     msg_form = QueueForm()

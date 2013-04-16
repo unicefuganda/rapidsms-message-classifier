@@ -1,7 +1,10 @@
 import os
+from pickle import PicklingError
 from celery.task import Task, task
 from celery.registry import tasks
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.db import models
 from django.utils.datastructures import SortedDict
 from xlrd import open_workbook
 from poll.models import ResponseCategory, Response, Category
@@ -19,21 +22,27 @@ def message_export(name, **kwargs):
     messages = kwargs.get('queryset')
     print messages
     messages_list = []
+
     for message in messages:
-        msg_export_list = SortedDict()
-        msg_export_list['Identifier'] = message.msg.connection.pk
-        msg_export_list['Score'] = "%.2f" % message.score
-        msg_export_list['Text'] = message.msg.text
-        msg_export_list['Date'] = message.msg.date
-        msg_export_list['Category'] = message.category.name if message.category else "N/A"
-        msg_export_list['Action'] = message.action.name if message.action else "N/A"
-        messages_list.append(msg_export_list)
+        try:
+            msg_export_list = SortedDict()
+            msg_export_list['Identifier'] = message.msg.connection.pk
+            msg_export_list['Score'] = "%.2f" % message.score
+            msg_export_list['Text'] = message.msg.text
+            msg_export_list['Date'] = message.msg.date
+            msg_export_list['Category'] = message.category.name if message.category else "N/A"
+            msg_export_list['Action'] = message.action.name if message.action else "N/A"
+            messages_list.append(msg_export_list)
+        except models.ObjectDoesNotExist:
+            continue
     ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
-    user = kwargs.get("user")
-    request = kwargs.get("request")
+    username = kwargs.get("username")
+    host = kwargs.get("host")
+    print username
+    user = User.objects.get(username=username)
     if user.email:
         msg = "Hi %s, The excel report that you requested to download is now ready for download. Please visit %s/%s" \
-              " and download it.\n\n Thank You\n Ureport Team" % (user.username, request.get_host(), link)
+              " and download it.\n\n Thank You\n Ureport Team" % (user.username, host, link)
         send_mail('Classified Message Queue Compete', msg, "", [user.email], fail_silently=False)
 
 

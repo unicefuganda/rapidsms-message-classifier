@@ -6,13 +6,13 @@ from django.utils.datastructures import SortedDict
 from xlrd import open_workbook
 from poll.models import ResponseCategory, Response, Category
 from uganda_common.utils import ExcelResponse
-from django.conf import settings
+from ureport.settings import UREPORT_ROOT
 
 
 @task
 def message_export(name, **kwargs):
     excel_file_path = \
-        os.path.join(os.path.join(os.path.join(settings.UREPORT_ROOT,
+        os.path.join(os.path.join(os.path.join(UREPORT_ROOT,
                                                'static'), 'spreadsheets'),
                      '%s_queued.xlsx' % name.replace(" ", "_"))
     link = "/static/ureport/spreadsheets/%s_queued.xlsx" % name.replace(" ", "_")

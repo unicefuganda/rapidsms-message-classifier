@@ -96,6 +96,7 @@ class QueueAllForm(ActionForm):
     def perform(self, request, results):
         message_ids = set([m.msg_id for m in results])
         messages = IbmMsgCategory.objects.filter(msg__pk__in=message_ids)
-        message_export.delay("queued_by_%s" % request.user.username, queryset=messages, user=request.user.username)
+        message_export.delay("%s_queued_by_%s" % request.user.username, queryset=messages,
+                             username=request.user.username, host=request.get_host())
         return "%d Messages have been queued for download, You'll be notified by email when download is ready" \
                % message_ids, "success"

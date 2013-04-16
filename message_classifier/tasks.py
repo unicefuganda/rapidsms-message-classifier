@@ -5,15 +5,14 @@ from django.core.mail import send_mail
 from django.utils.datastructures import SortedDict
 from xlrd import open_workbook
 from poll.models import ResponseCategory, Response, Category
-from rapidsms_httprouter.models import Message
 from uganda_common.utils import ExcelResponse
-from ureport_project.rapidsms_ureport.ureport.settings import UREPORT_ROOT
+from django.conf import settings
 
 
 @task
 def message_export(name, **kwargs):
     excel_file_path = \
-        os.path.join(os.path.join(os.path.join(UREPORT_ROOT,
+        os.path.join(os.path.join(os.path.join(settings.UREPORT_ROOT,
                                                'static'), 'spreadsheets'),
                      '%s_queued.xlsx' % name.replace(" ", "_"))
     link = "/static/ureport/spreadsheets/%s_queued.xlsx" % name.replace(" ", "_")

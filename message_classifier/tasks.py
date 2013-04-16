@@ -1,36 +1,41 @@
+import os
 from celery.task import Task, task
 from celery.registry import tasks
+from django.core.mail import send_mail
+from django.utils.datastructures import SortedDict
 from xlrd import open_workbook
 from poll.models import ResponseCategory, Response, Category
+from rapidsms_httprouter.models import Message
+from uganda_common.utils import ExcelResponse
+from ureport_project.rapidsms_ureport.ureport.settings import UREPORT_ROOT
 
 
-# def create_tags(message):
-#     pass
-# @task
-# def message_export(start_date, end_date, cutoff, name, user,contains, **kwargs):
-#     root_path = os.path.dirname(os.path.realpath(__file__))
-#     excel_file_path = os.path.join(os.path.join(os.path.join(root_path, 'static'), 'spreadsheets'), '%s.zip' % name)
-#     link = "/static/message_classifier/spreadsheets/" + name + ".zip"
-#     Report.objects.create(title=name, user=user, link=link)
-#     messages = Message.objects.filter(direction="I").exclude(application="script").filter(
-#         date__range=(start_date, end_date))
-#     if contains:
-#         or_searches=contains.split('or')
-#         search_reg="|".join(or_searches)
-#         messages=messages.filter(text__iregex=".*\m(%s)\y.*"%search_reg).distinct()
-#     messages_list = []
-#     for message in messages:
-#         if cutoff and len(message.text) > cutoff:
-#             pass
-#         else:
-#             msg_export_list = SortedDict()
-#             msg_export_list['pk'] = message.pk
-#             msg_export_list['mobile'] = message.connection.identity
-#             msg_export_list['text'] = message.text
-#             msg_export_list['date'] = message.date.date()
-#             msg_export_list['category'] = ''
-#             messages_list.append(msg_export_list)
-#     ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
+@task
+def message_export(name, **kwargs):
+    excel_file_path = \
+        os.path.join(os.path.join(os.path.join(UREPORT_ROOT,
+                                               'static'), 'spreadsheets'),
+                     '%s_queued.xlsx' % name.replace(" ", "_"))
+    link = "/static/ureport/spreadsheets/%s_queued.xlsx" % name.replace(" ", "_")
+    messages = kwargs.get('queryset')
+    print messages
+    messages_list = []
+    for message in messages:
+        msg_export_list = SortedDict()
+        msg_export_list['Identifier'] = message.msg.connection.pk
+        msg_export_list['Score'] = "%.2f" % message.score
+        msg_export_list['Text'] = message.msg.text
+        msg_export_list['Date'] = message.msg.date
+        msg_export_list['Category'] = message.category.name if message.category else "N/A"
+        msg_export_list['Action'] = message.action.name if message.action else "N/A"
+        messages_list.append(msg_export_list)
+    ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
+    user = kwargs.get("user")
+    request = kwargs.get("request")
+    if user.email:
+        msg = "Hi %s, The excel report that you requested to download is now ready for download. Please visit %s/%s" \
+              " and download it.\n\n Thank You\n Ureport Team" % (user.username, request.get_host, link)
+        send_mail('Classified Message Queue Compete', msg, "", [user.email], fail_silently=False)
 
 
 # @task
@@ -113,11 +118,12 @@ def upload_responses(excel_file, poll):
             for row in range(1, worksheet.nrows):
 
                 contact_pk, message_pk, category = worksheet.cell(row, 0).value, worksheet.cell(row,
-                    1).value, worksheet.cell(row,
+                                                                                                1).value, worksheet.cell(
+                    row,
                     14).value
                 try:
-                    res=Response.objects.get(message__pk=int(message_pk))
-                    res.poll=poll
+                    res = Response.objects.get(message__pk=int(message_pk))
+                    res.poll = poll
                     res.save()
                 except Response.DoesNotExist:
                     continue
@@ -126,13 +132,11 @@ def upload_responses(excel_file, poll):
                     rc = ResponseCategory.objects.get(response__message__pk=int(message_pk))
                     rc.category = poll.categories.get(name=category.strip())
                     rc.save()
-                except (ResponseCategory.DoesNotExist,Category.DoesNotExist):
+                except (ResponseCategory.DoesNotExist, Category.DoesNotExist):
                     continue
 
             responses = poll.responses.exclude(message__pk__in=response_pks).delete()
         poll.reprocess_responses()
-
-
 
 
 # #run every sunday at 2:30 am

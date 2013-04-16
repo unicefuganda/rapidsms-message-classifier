@@ -2,26 +2,32 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import HttpResponse
-from forms import ChooseCategoryForm, AssignActionForm, ChooseActionForm, DeleteMessagesForm, QueueForm
+from forms import ChooseCategoryForm, AssignActionForm, ChooseActionForm, DeleteMessagesForm, QueueForm, QueueAllForm
 from generic.views import generic
 from generic.sorters import SimpleSorter
 from django.contrib.auth.decorators import login_required
 from ureport.views.utils.paginator import ureport_paginate
 from models import IbmMsgCategory
+from tasks import message_export
 
 
 @login_required
 def message_classification(request):
-    if request.method == "POST" and not request.is_ajax():
-        if request.POST:
+    queryset = IbmMsgCategory.objects.filter(msg__direction='I')
+    filter_forms = [ChooseCategoryForm, ChooseActionForm]
+    FILTER_REQUEST_KEY = "%s_filter_request" % request.path
+    if request.method == "POST" and 'startdate' in request.POST:
+        filter_request_post = request.session.setdefault(FILTER_REQUEST_KEY, None)
+        if filter_request_post:
+            for form_class in filter_forms:
+                form_instance = form_class(filter_request_post, request=request)
+                if form_instance.is_valid():
+                    queryset = form_instance.filter(request, queryset)
+        queue_form = QueueForm(request.POST)
+        if queue_form.is_valid():
 
-            msg_form = QueueForm(request.POST)
-
-            if msg_form.is_valid():
-                # message_export.delay(msg_form.cleaned_data['startdate'], msg_form.cleaned_data['enddate'],
-                #                      msg_form.cleaned_data.get('size', None), msg_form.cleaned_data['name'],
-                #                      request.user, msg_form.cleaned_data.get('contains', None))
-                return HttpResponse(status=200)
+            queue_form.queue_export(request.user, queryset)
+            return HttpResponse("All is good... You will receive an email when export is ready")
 
     msg_form = QueueForm()
 
@@ -36,7 +42,7 @@ def message_classification(request):
     return generic(
         request,
         model=IbmMsgCategory,
-        queryset=IbmMsgCategory.objects.filter(msg__direction='I'),
+        queryset=queryset,
         objects_per_page=20,
         results_title='Classified Messages',
         partial_row='message_classifier/message_row.html',
@@ -47,6 +53,6 @@ def message_classification(request):
         sort_column='score',
         sort_ascending=False,
         msg_form=msg_form,
-        filter_forms=[ChooseCategoryForm, ChooseActionForm],
-        action_forms=[AssignActionForm, DeleteMessagesForm]
+        filter_forms=filter_forms,
+        action_forms=[DeleteMessagesForm, QueueAllForm, AssignActionForm]
     )

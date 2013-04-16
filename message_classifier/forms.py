@@ -3,6 +3,7 @@ from django import forms
 from models import IbmCategory, IbmAction, IbmMsgCategory
 from poll.models import Poll
 from generic.forms import FilterForm, ActionForm
+from tasks import message_export
 
 
 class QueueForm(forms.Form):
@@ -19,7 +20,11 @@ class QueueForm(forms.Form):
                                   'size': '15'
                               }))
     name = forms.CharField(max_length=30, required=True)
-    size = forms.IntegerField(label="message size cuttoff", required=False)
+
+    def queue_export(self, user, queryset):
+        name = self.cleaned_data['name']
+        queryset = queryset.filter(msg__date__range=[self.cleaned_data['startdate'], self.cleaned_data['enddate']])
+        message_export.delay(name, queryset=queryset, user=user)
 
 
 class ExcelUploadForm(forms.Form):
@@ -81,4 +86,15 @@ class DeleteMessagesForm(ActionForm):
         message_ids = set([m.msg_id for m in results])
         messages = IbmMsgCategory.objects.filter(msg__pk__in=message_ids)
         messages.delete()
-        return "%d Messages were deleted"%message_ids, 'success'
+        return "%d Messages were deleted" % message_ids, 'success'
+
+
+class QueueAllForm(ActionForm):
+    action_label = "Queue all Selected Messages For Download"
+
+    def perform(self, request, results):
+        message_ids = set([m.msg_id for m in results])
+        messages = IbmMsgCategory.objects.filter(msg__pk__in=message_ids)
+        message_export.delay("queued_by_%s" % request.user.username, queryset=messages, user=request.user.username)
+        return "%d Messages have been queued for download, You'll be notified by email when download is ready" \
+               % message_ids, "success"

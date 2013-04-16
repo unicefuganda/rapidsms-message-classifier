@@ -22,7 +22,7 @@ class QueueForm(forms.Form):
     name = forms.CharField(max_length=30, required=True)
 
     def queue_export(self, username, host, queryset):
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         name = self.cleaned_data['name']
         queryset = queryset.filter(msg__date__range=[self.cleaned_data['startdate'], self.cleaned_data['enddate']])
         message_export.delay(name, queryset=queryset, username=username, host=host)

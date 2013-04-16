@@ -33,7 +33,7 @@ def message_export(name, **kwargs):
     request = kwargs.get("request")
     if user.email:
         msg = "Hi %s, The excel report that you requested to download is now ready for download. Please visit %s/%s" \
-              " and download it.\n\n Thank You\n Ureport Team" % (user.username, request.get_host, link)
+              " and download it.\n\n Thank You\n Ureport Team" % (user.username, request.get_host(), link)
         send_mail('Classified Message Queue Compete', msg, "", [user.email], fail_silently=False)
 
 

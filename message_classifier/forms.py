@@ -102,7 +102,7 @@ class QueueAllForm(ActionForm):
         message_export.delay(name.replace(" ", "_"), queryset=messages,
                              username=request.user.username, host=request.get_host())
         return "%d Messages have been queued for download, You'll be notified by email when download is ready" \
-               % message_ids, "success"
+               % len(message_ids), "success"
 
 
 class NewActionForm(forms.ModelForm):

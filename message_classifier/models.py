@@ -48,3 +48,4 @@ class IbmMsgCategory(models.Model):
         managed = getattr(settings, 'IBM_TABLES_MANAGED', False)
         db_table = 'ibm_msg_category'
         app_label = 'message_classifier'
+        ordering = ['score', '-msg__date']

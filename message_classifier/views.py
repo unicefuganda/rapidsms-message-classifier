@@ -13,7 +13,7 @@ from models import IbmMsgCategory, IbmAction
 
 @login_required
 def message_classification(request):
-    queryset = IbmMsgCategory.objects.filter(msg__direction='I')
+    queryset = IbmMsgCategory.objects.filter(msg__direction='I', score__gte=0.5)
     filter_forms = [ChooseCategoryForm, ChooseActionForm]
     FILTER_REQUEST_KEY = "%s_filter_request" % request.path
     if request.method == "POST" and 'startdate' in request.POST:

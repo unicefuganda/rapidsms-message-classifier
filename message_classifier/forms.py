@@ -25,7 +25,8 @@ class QueueForm(forms.Form):
     def queue_export(self, username, host, queryset):
         # import pdb; pdb.set_trace()
         name = self.cleaned_data['name']
-        queryset = queryset.filter(msg__date__range=[self.cleaned_data['startdate'], self.cleaned_data['enddate']])
+        queryset = queryset.filter(msg__date__range=[self.cleaned_data['startdate'], self.cleaned_data['enddate']],
+                                   score__gte=0.5)
         message_export.delay(name, queryset=queryset, username=username, host=host)
 
 
@@ -96,7 +97,7 @@ class QueueAllForm(ActionForm):
 
     def perform(self, request, results):
         message_ids = set([m.msg_id for m in results])
-        messages = IbmMsgCategory.objects.filter(msg__pk__in=message_ids)
+        messages = IbmMsgCategory.objects.filter(msg__pk__in=message_ids, score__gte=0.5)
         name = "%s_queued_by_%s" % (str(datetime.now()), request.user.username)
         message_export.delay(name.replace(" ", "_"), queryset=messages,
                              username=request.user.username, host=request.get_host())

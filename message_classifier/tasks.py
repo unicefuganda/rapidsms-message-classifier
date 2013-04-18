@@ -23,17 +23,20 @@ def message_export(name, **kwargs):
     messages_list = []
 
     for message in messages:
+        msg_export_list = SortedDict()
+        msg_export_list['Identifier'] = message.msg.connection.pk
+        msg_export_list['Score'] = "%.2f" % message.score
+        msg_export_list['Text'] = message.msg.text
+        msg_export_list['Date'] = message.msg.date
         try:
-            msg_export_list = SortedDict()
-            msg_export_list['Identifier'] = message.msg.connection.pk
-            msg_export_list['Score'] = "%.2f" % message.score
-            msg_export_list['Text'] = message.msg.text
-            msg_export_list['Date'] = message.msg.date
-            msg_export_list['Category'] = message.category.name if message.category else "N/A"
-            msg_export_list['Action'] = message.action.name if message.action else "N/A"
-            messages_list.append(msg_export_list)
+            msg_export_list['Category'] = message.category.name
         except models.ObjectDoesNotExist:
-            continue
+            msg_export_list['Category'] = "N/A"
+        try:
+            msg_export_list['Action'] = message.action.name
+        except models.ObjectDoesNotExist:
+            msg_export_list['Action'] = "N/A"
+        messages_list.append(msg_export_list)
     ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
     username = kwargs.get("username")
     host = kwargs.get("host")

@@ -89,7 +89,7 @@ class DeleteMessagesForm(ActionForm):
         message_ids = set([m.msg_id for m in results])
         messages = IbmMsgCategory.objects.filter(msg__pk__in=message_ids)
         messages.delete()
-        return "%d Messages were deleted" % message_ids, 'success'
+        return "%d Messages were deleted" % len(message_ids), 'success'
 
 
 class QueueAllForm(ActionForm):

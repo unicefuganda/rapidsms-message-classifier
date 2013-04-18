@@ -36,6 +36,10 @@ def message_export(name, **kwargs):
             msg_export_list['Action'] = message.action.name
         except models.ObjectDoesNotExist:
             msg_export_list['Action'] = "N/A"
+        try:
+            msg_export_list['Rating'] = message.msg.details.filter(attribute__name='rating')[0].value
+        except IndexError:
+            msg_export_list['Rating'] = "Unrated"
         messages_list.append(msg_export_list)
     ExcelResponse(messages_list, output_name=excel_file_path, write_to_file=True)
     username = kwargs.get("username")

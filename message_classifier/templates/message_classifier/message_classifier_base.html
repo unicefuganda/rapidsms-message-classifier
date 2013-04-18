@@ -204,10 +204,8 @@
     <div>
         <ul class="nav nav-tabs">
             <li class="active"><a href="#download" data-toggle="tab">Queue Download</a></li>
-            <li><a href="#reports" data-toggle="tab">Department Reports</a></li>
-            <li><a href="#category" data-toggle="tab">add Category</a></li>
-            <li><a href="#category_edit" data-toggle="tab">Edit Category</a></li>
-            <li><a href="#ready" data-toggle="tab">My Queued Downloads</a></li>
+            <li><a href="#category" data-toggle="tab">add Action</a></li>
+            <li><a href="#category_edit" data-toggle="tab">Edit Action</a></li>
         </ul>
     </div>
     <div>
@@ -236,30 +234,13 @@
             </div>
 
 
-            <div class="tab-pane" id="upload">
-                <form enctype="multipart/form-data" id="msg_upload_form" action="" method="POST" >
-                <table>
-                    <tr>
-                        <td>Upload Classified Messages</td>
-                    </tr>
-<tr><td id="status_msg1"></td></tr>
 
-
-                        {{ upload_form.as_table }}
-                        <tr>
-                            <td><input type="submit" value="upload" ></td>
-                        </tr>
-
-                </table>
-                    <iframe id="upload_target" name="upload_target" src="" onLoad="upload_complete1();"style="display:none">&nbsp;</iframe>
-                </form>
-            </div>
             <div class="tab-pane" id="category">
-                <h2>Add new Category</h2>
+                <h2>Add new Action</h2>
                 <form method="Post" action="">
                 <table>
 
-                        {{ category_form.as_table }}
+                        {{ action_form.as_table }}
                         <tr>
                             <td><a class="btn" href="javascript:void(0)" onclick="">Add Category</a></td>
                             <td><a href="{%  url flaggedmessages %}">Manage Category Flags</a></td>
@@ -271,15 +252,15 @@
             </div>
 
             <div class="tab-pane" id="category_edit">
-                <h2>Categories</h2>
+                <h2>Actions</h2>
 
                 <table width="50%">
 
-                    {% for category in categories %}
+                    {% for action in ibm_actions %}
                         <tr>
-                            <td>{{ category }}</td>
-                            <td><a class="btn" id="cat_{{ category.pk }}" href="javascript:void(0)"
-                                   onclick="edit_category('{{ category.pk }}')">Edit</a></td>
+                            <td>{{ action }}</td>
+                            <td><a class="btn" id="cat_{{ action.action_id }}" href="javascript:void(0)"
+                                   onclick="edit_category('{{ action.action_id }}')">Edit</a></td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -292,97 +273,6 @@
 
             </div>
 
-            <div class="tab-pane" id="ready">
-                <h2>My Queued Reports</h2>
-                {%if  perms.message_classifier.can_export %}
-
-                <table width="100%" class="zebra-striped">
-                    <thead>
-                    <tr>
-                        <td>
-                            Name
-                        </td>
-                        <td>
-                            Date
-                        </td>
-                        <td>
-                            Download
-                        </td>
-                    </tr>
-                    </thead>
-                    {% for report in reports %}
-
-                        <tr>
-                            <td>{{ report.title }}</td>
-                            <td>{{ report.date }}</td>
-                            <td><a class="btn" href="{{ report.link }}">Download</a></td>
-                        </tr>
-                    {% endfor %}
-
-                </table>
-
-            {%endif%}
-
-            </div>
-
-            <div class="tab-pane" id="poll_upload">
-                {%if  perms.message_classifier.can_upload %}
-                <form id="poll_upload_form" enctype="multipart/form-data" action="" method="POST" >
-                <table>
-                    <tr>
-                        <td>Upload Poll Responses</td>
-                    </tr>
-                    <tr><td>Select Poll:</td><td>{{ poll_form.poll }}</td></tr>
-
-                        <tr>
-                            <td>Upload Poll Responses File</td>
-                            <td id="status_msg2"></td>
-                            <td>{{ poll_form.excel }}</td>
-
-                           <tr> <td><input type="submit" value="upload" ></td></tr>
-                            <iframe id="upload_target2" name="upload_target2" src="" onLoad="upload_complete2();" style="display:none">&nbsp;</iframe>
-                        </tr>
-
-                </table>
-                </form>
-                {%endif%}
-            </div>
-            <div class="tab-pane" id="reports">
-
-                {%if  perms.message_classifier.can_export %}
-                <h2>Departments</h2>
-                <table class="zebra-striped fg" width="100%">
-                    <thead>
-                    <tr>
-                        <td>Department</td>
-                        <td>Categories</td>
-                        <td>Export</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for department in departments %}
-                        <tr>
-                            <td><h3>{{ department.name }}</h3></td>
-                            <td></td>
-                            <td><a href="{{ MEDIA_URL }}message_classifier/spreadsheets/{{department.name}}.zip" class="btn">Downlod {{ department.name }} Messages</a></td>
-                        <tr>
-                            <td></td>
-                            <td>{{ department.name }} Categories</td>
-                        </tr>
-                        {% for cat in department.categories %}
-
-                            <tr>
-                                <td></td>
-                                <td>{{ cat }}</td>
-                                <td><a class="btn" href="{{ MEDIA_URL }}message_classifier/spreadsheets/{{cat.slug}}.zip"">Download {{ cat }} messages</a></td>
-                            </tr>
-                        {% endfor %}
-                    {% endfor %}
-                    </tbody>
-                </table>
-
-            {%endif%}
-            </div>
         </div>
 
 

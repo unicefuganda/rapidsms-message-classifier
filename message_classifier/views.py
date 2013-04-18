@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import HttpResponse
-from forms import ChooseCategoryForm, AssignActionForm, ChooseActionForm, DeleteMessagesForm, QueueForm, QueueAllForm
+from forms import ChooseCategoryForm, AssignActionForm, ChooseActionForm, DeleteMessagesForm, QueueForm, QueueAllForm, \
+    NewActionForm
 from generic.views import generic
 from generic.sorters import SimpleSorter
 from django.contrib.auth.decorators import login_required
 from ureport.views.utils.paginator import ureport_paginate
-from models import IbmMsgCategory
-from tasks import message_export
+from models import IbmMsgCategory, IbmAction
 
 
 @login_required
@@ -25,11 +25,11 @@ def message_classification(request):
                     queryset = form_instance.filter(request, queryset)
         queue_form = QueueForm(request.POST)
         if queue_form.is_valid():
-
             queue_form.queue_export(request.user.username, request.get_host(), queryset)
             return HttpResponse("All is good... You will receive an email when export is ready")
 
     msg_form = QueueForm()
+    action_form = NewActionForm
 
     columns = [('Identifier', True, 'message__connection_id', SimpleSorter()),
                ('Text', True, 'msg__text', SimpleSorter()),
@@ -53,6 +53,8 @@ def message_classification(request):
         sort_column='score',
         sort_ascending=False,
         msg_form=msg_form,
+        action_form=action_form,
+        ibm_actions=IbmAction.objects.all(),
         filter_forms=filter_forms,
         action_forms=[DeleteMessagesForm, QueueAllForm, AssignActionForm]
     )

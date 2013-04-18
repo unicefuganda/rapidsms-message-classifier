@@ -26,9 +26,6 @@ class IbmAction(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self, force_insert=False, force_update=False, using=None):
-        raise NotImplementedError("Please don't try to write stuff to this table... Ok?")
-
     class Meta:
         managed = getattr(settings, 'IBM_TABLES_MANAGED', False)
         db_table = 'ibm_action'

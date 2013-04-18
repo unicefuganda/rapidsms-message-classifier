@@ -1,5 +1,4 @@
 import os
-from pickle import PicklingError
 from celery.task import Task, task
 from celery.registry import tasks
 from django.contrib.auth.models import User
@@ -41,8 +40,8 @@ def message_export(name, **kwargs):
     print username
     user = User.objects.get(username=username)
     if user.email:
-        msg = "Hi %s, The excel report that you requested to download is now ready for download. Please visit %s/%s" \
-              " and download it.\n\n Thank You\n Ureport Team" % (user.username, host, link)
+        msg = "Hi %s,\nThe excel report that you requested to download is now ready for download. Please visit %s%s" \
+              " and download it.\n\nThank You\nUreport Team" % (user.username, host, link)
         send_mail('Classified Message Queue Compete', msg, "", [user.email], fail_silently=False)
 
 

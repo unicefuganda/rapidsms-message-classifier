@@ -39,15 +39,15 @@
 
             {%if not alert%}
 
-                <li><a href='/alerts/?rating=1&msg={{object.msg.pk}}'  onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                <li><a href='/alerts/?rating=1&msg={{object.msg.pk}}'  onclick="bind_ajax(this,'rate{{object.msg.pk}}');"
                        data-remote=true title='Requires Attention' class='one-star star'>1</a></li>
-                <li><a href='/alerts/?rating=2&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                <li><a href='/alerts/?rating=2&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{object.msg.pk}}');"
                        data-remote=true title='Moderate' class='two-stars star'>2</a></li>
-                <li><a href='/alerts/?rating=3&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                <li><a href='/alerts/?rating=3&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{object.msg.pk}}');"
                        data-remote=true title='Important' class='three-stars star'>3</a></li>
-                <li><a href='/alerts/?rating=4&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                <li><a href='/alerts/?rating=4&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{object.msg.pk}}');"
                        data-remote=true title='Urgent' class='four-stars star star'>4</a></li>
-                <li><a href='/alerts/?rating=5&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{msg.pk}}');"
+                <li><a href='/alerts/?rating=5&msg={{object.msg.pk}}' onclick="bind_ajax(this,'rate{{object.msg.pk}}');"
                        data-remote=true title='Very Urgent' class='five-stars star '>5</a></li>
             {%endif%}
 

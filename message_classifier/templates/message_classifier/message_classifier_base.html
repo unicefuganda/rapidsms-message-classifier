@@ -143,6 +143,7 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/tabs.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}generic/javascripts/dashboard.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}generic/javascripts/generic.js"></script>
+    <script src="{{MEDIA_URL}}ureport/javascripts/mp_dashboard.js" type="text/javascript"></script>
     <script type="text/javascript">
         $(function() {
             $("#id_startdate").datepicker({ dateFormat: 'dd/mm/yy' ,changeYear: true ,changeMonth: true,minDate: new Date(2009, 1 - 1, 1) });
@@ -180,7 +181,7 @@
                        });
 
 
-            
+
         });
 
         function filter(elem) {
@@ -193,6 +194,27 @@
         }
 
 
+        function bind_ajax(elem, cont) {
+
+            form=$(elem);
+            $.ureport.handleRemote( form );
+            $(elem).bind('ajax:before',function (exhr, status, error) {
+                ajax_loading(elem);
+            }).
+                    bind('ajax:success', function (evt, data, status, xhr) {
+
+                        // Insert response partial into page below the form.
+
+                        $('#' + cont).html(xhr.responseText);
+                        $('#'+cont).effect("highlight", {}, 3000);
+                        $('.ajax_loading').remove();
+
+
+                    })
+                    .bind('ajax:failure', function (xhr, status, error) {
+                        alert("something went wrong!");
+                    });
+        }
 
 
     </script>

@@ -9,6 +9,7 @@ from generic.sorters import SimpleSorter
 from django.contrib.auth.decorators import login_required
 from ureport.views.utils.paginator import ureport_paginate
 from models import IbmMsgCategory, IbmAction
+from ureport.forms import PushToMtracForm
 
 
 @login_required
@@ -56,5 +57,5 @@ def message_classification(request):
         action_form=action_form,
         ibm_actions=IbmAction.objects.all(),
         filter_forms=filter_forms,
-        action_forms=[DeleteMessagesForm, QueueAllForm, AssignActionForm]
+        action_forms=[PushToMtracForm, QueueAllForm, AssignActionForm]
     )

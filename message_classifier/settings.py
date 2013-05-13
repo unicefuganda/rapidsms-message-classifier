@@ -1,4 +1,4 @@
-STOP_WORDS = ["the", "da", "ureport", "u report", "u-report", "yes", "no", "is", "kampala", "ug", "and", "radio",
+STOP_WORDS = ["the", "da", "ureport", "u report", "u-report", "yes", "no", "is", "Juba", "ug", "and", "radio",
               "scout", "scouts", "district", "not",
               "are", "their", "they", "from", "heard", "that", "for", "can", "but", "have", "about", "them", "should",
               "Busia",

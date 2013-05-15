@@ -12,6 +12,127 @@
     <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}contact/stylesheets/messages.css"/>
     <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/message_log.css"/>
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}generic/stylesheets/jquery-ui-1.7.3.custom.css"/>
+{#    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}message_classifier/stylesheets/rating.css">#}
+    <style type="text/css">
+        .star-rating {
+            list-style: none;
+            margin: 0px;
+            padding: 0px;
+            width: 100px;
+            height: 20px;
+            position: relative;
+            background: url({{ MEDIA_URL }}ureport/images/star_rating2.gif ) top left repeat-x;
+        }
+
+        .star-rating li {
+            padding: 0px;
+            margin: 0px;
+            /*\*/
+            float: left;
+            /* */
+        }
+
+        .star-rating li a {
+            display: block;
+            width: 20px;
+            height: 20px;
+            text-decoration: none;
+            text-indent: -9000px;
+            z-index: 20;
+            position: absolute;
+            padding: 0px;
+        }
+
+        .star-rating li a:hover {
+            background: url({{ MEDIA_URL }}ureport/images/star_rating2.gif ) left bottom;
+            z-index: 1;
+            left: 0px;
+            border: none;
+        }
+
+        .star-rating a.one-star {
+            left: 0px;
+        }
+
+        .star-rating a.one-star:hover {
+            width: 20px;
+        }
+
+        .star-rating a.two-stars {
+            left: 20px;
+        }
+
+        .star-rating a.two-stars:hover {
+            width: 40px;
+        }
+
+        .star-rating a.three-stars:hover {
+            width: 60px;
+        }
+
+        .star-rating a.three-stars {
+            left: 40px;
+        }
+
+        .star-rating a.four-stars {
+            left: 60px;
+        }
+
+        .star-rating a.four-stars:hover {
+            width: 80px;
+        }
+
+        .star-rating a.five-stars {
+            left: 80px;
+        }
+
+        .star-rating a.five-stars:hover {
+            width: 100px;
+        }
+
+        .star-rating a.rate5 {
+            background: url({{ MEDIA_URL }}ureport/images/star_rating2.gif ) left bottom;
+            z-index: 1;
+            left: 0px;
+            border: none;
+            width: 100px;
+        }
+
+        .star-rating a.rate4 {
+            background: url({{ MEDIA_URL }}ureport/images/star_rating2.gif ) left bottom;
+            z-index: 1;
+            left: 0px;
+            border: none;
+            width: 80px;
+        }
+
+        .star-rating a.rate3 {
+            background: url({{ MEDIA_URL }}ureport/images/star_rating2.gif ) left bottom;
+            z-index: 1;
+            left: 0px;
+            border: none;
+            width: 60px;
+        }
+
+        .star-rating a.rate2 {
+            background: url({{ MEDIA_URL }}ureport/images/star_rating2.gif ) left bottom;
+            z-index: 1;
+            left: 0px;
+            border: none;
+            width: 40px;
+        }
+        .current a{
+            background-color: #ccc;
+        }
+
+        .star-rating a.rate1 {
+            background: url({{ MEDIA_URL }}ureport/images/star_rating2.gif ) left bottom;
+            z-index: 1;
+            left: 0px;
+            border: none;
+            width: 20px;
+        }
+    </style>
 {% endblock %}
 {% block extra_js %}
 
@@ -20,6 +141,9 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/jquery-ui.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/dropdown.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}ureport/javascripts/tabs.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}generic/javascripts/dashboard.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}generic/javascripts/generic.js"></script>
+    <script src="{{MEDIA_URL}}ureport/javascripts/mp_dashboard.js" type="text/javascript"></script>
     <script type="text/javascript">
         $(function() {
             $("#id_startdate").datepicker({ dateFormat: 'dd/mm/yy' ,changeYear: true ,changeMonth: true,minDate: new Date(2009, 1 - 1, 1) });
@@ -57,74 +181,62 @@
                        });
 
 
-            
+
         });
-        function train(message, category) {
-            elem = "#cat_" + message;
-            url = "/classifier/" + message + "/train/" + category + "/";
 
-            ajax_loading(elem);
-            $(elem).load(url, function() {
-                $('.ajax_loading').remove();
+        function filter(elem) {
+            form = $(elem).parents("form");
+            form_data = form.serializeArray();
+            $('#div_results_loading').show();
+            $('#object_list').load("./", form_data, function() {
+                $('#div_results_loading').hide();
             });
         }
 
-        function change_action(message,action){
-            elem = "#act_" + message;
-            url = "/classifier/" + message + "/change_action/" + action + "/";
 
-            ajax_loading(elem);
-            $(elem).load(url, function() {
-                $('.ajax_loading').remove();
-            });
+        function bind_ajax(elem, cont) {
 
+            form=$(elem);
+            $.ureport.handleRemote( form );
+            $(elem).bind('ajax:before',function (exhr, status, error) {
+                ajax_loading(elem);
+            }).
+                    bind('ajax:success', function (evt, data, status, xhr) {
+
+                        // Insert response partial into page below the form.
+
+                        $('#' + cont).html(xhr.responseText);
+                        $('#'+cont).effect("highlight", {}, 3000);
+                        $('.ajax_loading').remove();
+
+
+                    })
+                    .bind('ajax:failure', function (xhr, status, error) {
+                        alert("something went wrong!");
+                    });
         }
 
-        function edit_category(category) {
-            elem = "#edit_category";
-            url = "/classifier/category/" + category + "/edit/";
-            ajax_loading(elem);
-            $(elem).load(url, function() {
-                $('.ajax_loading').remove();
-
-            });
-        }
-
-        function upload_complete1()
-        {
-            $('#status_msg1').html("Successfully Uploaded file");
-            $('.ajax_loading').remove();
-            $('#msg_upload_form').find('textarea,input[type="text"],input[type="file"]').val("");
-        }
-        function upload_complete2()
-        {
-            $('#status_msg2').html("Successfully Uploaded file");
-            $('.ajax_loading').remove();
-            $('#poll_upload_form').find('textarea,input[type="text"],input[type="file"]').val("");
-        }
 
     </script>
 
 {% endblock %}
 
 {% block content %}
+
+    <div class="ibm_logo" style="float: right; font-weight: bold; font-size: 18px; color: #00aeef">Powered by Text Analytics from IBM Research</div>
+    <br style="clear: both"/>
     
     <div>
         <ul class="nav nav-tabs">
             <li class="active"><a href="#download" data-toggle="tab">Queue Download</a></li>
-            <li><a href="#upload" data-toggle="tab">Upload Classified</a></li>
-            <li><a href="#reports" data-toggle="tab">Department Reports</a></li>
-            <li><a href="#category" data-toggle="tab">add Category</a></li>
-            <li><a href="#category_edit" data-toggle="tab">Edit Category</a></li>
-            <li><a href="#poll_upload" data-toggle="tab">Upload Poll Responses</a></li>
-            <li><a href="#ready" data-toggle="tab">My Queued Downloads</a></li>
+            <li><a href="#category" data-toggle="tab">add Action</a></li>
+            <li><a href="#category_edit" data-toggle="tab">Edit Action</a></li>
         </ul>
     </div>
     <div>
         <div class="tab-content">
 
             <div class="tab-pane active" id="download">
-                {%if  perms.message_classifier.can_export %}
                   <form action="" method="POST" data-remote=true id="queue_form">
                 <table>
                     <tr>
@@ -142,34 +254,16 @@
 
                 </table>
                       </form>
-                {%endif%}
             </div>
 
 
-            <div class="tab-pane" id="upload">
-                <form enctype="multipart/form-data" id="msg_upload_form" action="" method="POST" >
-                <table>
-                    <tr>
-                        <td>Upload Classified Messages</td>
-                    </tr>
-<tr><td id="status_msg1"></td></tr>
 
-
-                        {{ upload_form.as_table }}
-                        <tr>
-                            <td><input type="submit" value="upload" ></td>
-                        </tr>
-
-                </table>
-                    <iframe id="upload_target" name="upload_target" src="" onLoad="upload_complete1();"style="display:none">&nbsp;</iframe>
-                </form>
-            </div>
             <div class="tab-pane" id="category">
-                <h2>Add new Category</h2>
+                <h2>Add new Action</h2>
                 <form method="Post" action="">
                 <table>
 
-                        {{ category_form.as_table }}
+                        {{ action_form.as_table }}
                         <tr>
                             <td><a class="btn" href="javascript:void(0)" onclick="">Add Category</a></td>
                             <td><a href="{%  url flaggedmessages %}">Manage Category Flags</a></td>
@@ -181,15 +275,15 @@
             </div>
 
             <div class="tab-pane" id="category_edit">
-                <h2>Categories</h2>
+                <h2>Actions</h2>
 
                 <table width="50%">
 
-                    {% for category in categories %}
+                    {% for action in ibm_actions %}
                         <tr>
-                            <td>{{ category }}</td>
-                            <td><a class="btn" id="cat_{{ category.pk }}" href="javascript:void(0)"
-                                   onclick="edit_category('{{ category.pk }}')">Edit</a></td>
+                            <td>{{ action }}</td>
+                            <td><a class="btn" id="cat_{{ action.action_id }}" href="javascript:void(0)"
+                                   onclick="edit_category('{{ action.action_id }}')">Edit</a></td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -202,97 +296,6 @@
 
             </div>
 
-            <div class="tab-pane" id="ready">
-                <h2>My Queued Reports</h2>
-                {%if  perms.message_classifier.can_export %}
-
-                <table width="100%" class="zebra-striped">
-                    <thead>
-                    <tr>
-                        <td>
-                            Name
-                        </td>
-                        <td>
-                            Date
-                        </td>
-                        <td>
-                            Download
-                        </td>
-                    </tr>
-                    </thead>
-                    {% for report in reports %}
-
-                        <tr>
-                            <td>{{ report.title }}</td>
-                            <td>{{ report.date }}</td>
-                            <td><a class="btn" href="{{ report.link }}">Download</a></td>
-                        </tr>
-                    {% endfor %}
-
-                </table>
-
-            {%endif%}
-
-            </div>
-
-            <div class="tab-pane" id="poll_upload">
-                {%if  perms.message_classifier.can_upload %}
-                <form id="poll_upload_form" enctype="multipart/form-data" action="" method="POST" >
-                <table>
-                    <tr>
-                        <td>Upload Poll Responses</td>
-                    </tr>
-                    <tr><td>Select Poll:</td><td>{{ poll_form.poll }}</td></tr>
-
-                        <tr>
-                            <td>Upload Poll Responses File</td>
-                            <td id="status_msg2"></td>
-                            <td>{{ poll_form.excel }}</td>
-
-                           <tr> <td><input type="submit" value="upload" ></td></tr>
-                            <iframe id="upload_target2" name="upload_target2" src="" onLoad="upload_complete2();" style="display:none">&nbsp;</iframe>
-                        </tr>
-
-                </table>
-                </form>
-                {%endif%}
-            </div>
-            <div class="tab-pane" id="reports">
-
-                {%if  perms.message_classifier.can_export %}
-                <h2>Departments</h2>
-                <table class="zebra-striped fg" width="100%">
-                    <thead>
-                    <tr>
-                        <td>Department</td>
-                        <td>Categories</td>
-                        <td>Export</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for department in departments %}
-                        <tr>
-                            <td><h3>{{ department.name }}</h3></td>
-                            <td></td>
-                            <td><a href="{{ MEDIA_URL }}message_classifier/spreadsheets/{{department.name}}.zip" class="btn">Downlod {{ department.name }} Messages</a></td>
-                        <tr>
-                            <td></td>
-                            <td>{{ department.name }} Categories</td>
-                        </tr>
-                        {% for cat in department.categories %}
-
-                            <tr>
-                                <td></td>
-                                <td>{{ cat }}</td>
-                                <td><a class="btn" href="{{ MEDIA_URL }}message_classifier/spreadsheets/{{cat.slug}}.zip"">Download {{ cat }} messages</a></td>
-                            </tr>
-                        {% endfor %}
-                    {% endfor %}
-                    </tbody>
-                </table>
-
-            {%endif%}
-            </div>
         </div>
 
 

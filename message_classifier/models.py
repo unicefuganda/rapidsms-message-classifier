@@ -36,7 +36,7 @@ class IbmMsgCategory(models.Model):
     msg = models.ForeignKey(Message, primary_key=True)
     category = models.ForeignKey(IbmCategory)
     score = models.FloatField()
-    action = models.ForeignKey(IbmAction)
+    action = models.ForeignKey(IbmAction, null=True)
 
     def __unicode__(self):
         msg = self.msg.text

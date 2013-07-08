@@ -1,0 +1,49 @@
+[ { "fields" : { "name" : "education" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 1
+  },
+  { "fields" : { "name" : "emergency" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 2
+  },
+  { "fields" : { "name" : "employment" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 3
+  },
+  { "fields" : { "name" : "energy" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 4
+  },
+  { "fields" : { "name" : "family & relationships" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 5
+  },
+  { "fields" : { "name" : "health & nutrition" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 6
+  },
+  { "fields" : { "name" : "irrelevant" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 7
+  },
+  { "fields" : { "name" : "ovc" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 8
+  },
+  { "fields" : { "name" : "social policy" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 9
+  },
+  { "fields" : { "name" : "u-report" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 10
+  },
+  { "fields" : { "name" : "violence against children" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 11
+  },
+  { "fields" : { "name" : "water" },
+    "model" : "message_classifier.ibmcategory",
+    "pk" : 12
+  }
+]

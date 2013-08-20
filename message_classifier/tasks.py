@@ -32,10 +32,15 @@ def message_export(name, **kwargs):
             msg_export_list['Category'] = message.category.name
         except models.ObjectDoesNotExist:
             msg_export_list['Category'] = "N/A"
+        except:
+            msg_export_list['Action'] = "N/A"
         try:
             msg_export_list['Action'] = message.action.name
         except models.ObjectDoesNotExist:
             msg_export_list['Action'] = "N/A"
+        except:
+            msg_export_list['Action'] = "N/A"
+
         try:
             msg_export_list['Rating'] = message.msg.details.filter(attribute__name='rating')[0].value
         except IndexError:

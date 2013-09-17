@@ -37,6 +37,7 @@ class IbmMsgCategory(models.Model):
     category = models.ForeignKey(IbmCategory)
     score = models.FloatField()
     action = models.ForeignKey(IbmAction, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         msg = self.msg.text

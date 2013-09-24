@@ -269,7 +269,7 @@
 
                     {% for category in ibm_categories %}
                         <tr>
-                            <td><a href="{% url cloud_dashboard|cap_slugify %}">{{ category.name|capfirst }}</a> </td>
+                            <td><a href="{% url cloud_dashboard category.name|cap_slugify %}">{{ category.name|capfirst }}</a> </td>
                         </tr>
                     {% endfor %}
                 </table>

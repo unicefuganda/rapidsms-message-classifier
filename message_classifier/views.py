@@ -14,7 +14,7 @@ from ureport.forms import PushToMtracForm
 
 @login_required
 def message_classification(request):
-    queryset = IbmMsgCategory.objects.filter(msg__direction='I', score__gte=0.25)
+    queryset = IbmMsgCategory.objects.filter(msg__direction='I', score__gte=0.1)
     filter_forms = [ChooseCategoryForm, ChooseActionForm]
     FILTER_REQUEST_KEY = "%s_filter_request" % request.path
     if request.method == "POST" and 'startdate' in request.POST:

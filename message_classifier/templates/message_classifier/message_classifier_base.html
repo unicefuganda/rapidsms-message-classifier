@@ -1,4 +1,6 @@
+
 {% extends "generic/base.html" %}
+{% load i18n %}
 
 {% block title %}
     Message Classifier - {{ block.super }}
@@ -223,14 +225,14 @@
 
 {% block content %}
 
-    <div class="ibm_logo" style="float: right; font-weight: bold; font-size: 18px; color: #00aeef">Powered by Text Analytics from IBM Research</div>
+    <div class="ibm_logo" style="float: right; font-weight: bold; font-size: 18px; color: #00aeef">{% trans "Powered by Text Analytics from IBM Research" %}</div>
     <br style="clear: both"/>
     
     <div>
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#download" data-toggle="tab">Queue Download</a></li>
-            <li><a href="#category" data-toggle="tab">add Action</a></li>
-            <li><a href="#category_edit" data-toggle="tab">Edit Action</a></li>
+            <li class="active"><a href="#download" data-toggle="tab">{% trans "Queue Download" %}</a></li>
+            <li><a href="#category" data-toggle="tab">{% trans "add Action" %}</a></li>
+            <li><a href="#category_edit" data-toggle="tab">{% trans "Edit Action" %}</a></li>
         </ul>
     </div>
     <div>
@@ -240,14 +242,14 @@
                   <form action="" method="POST" data-remote=true id="queue_form">
                 <table>
                     <tr>
-                        <td>Select Date range for messages to queue for download</td>
+                        <td>{% trans "Select Date range for messages to queue for download" %}</td>
 
                     </tr>
 
 
                         {{ msg_form.as_table }}
                         <tr>
-                            <td><input type="submit" name="Queue download" value="Queue download" data-disable-with="Queueing......"></td>
+                            <td><input type="submit" name="Queue download" value="{% trans "Queue download" %}" data-disable-with="{% trans "Queueing......" %}"></td>
                         </tr>
 
 
@@ -259,14 +261,14 @@
 
 
             <div class="tab-pane" id="category">
-                <h2>Add new Action</h2>
+                <h2>{% trans "Add new Action" %}</h2>
                 <form method="Post" action="">
                 <table>
 
                         {{ action_form.as_table }}
                         <tr>
-                            <td><a class="btn" href="javascript:void(0)" onclick="">Add Category</a></td>
-                            <td><a href="{%  url flaggedmessages %}">Manage Category Flags</a></td>
+                            <td><a class="btn" href="javascript:void(0)" onclick="">{% trans "Add Category" %}</a></td>
+                            <td><a href="{%  url flaggedmessages %}">{% trans "Manage Category Flags" %}</a></td>
                         </tr>
 
                 </table>
@@ -275,7 +277,7 @@
             </div>
 
             <div class="tab-pane" id="category_edit">
-                <h2>Actions</h2>
+                <h2>{% trans "Actions" %}</h2>
 
                 <table width="50%">
 
@@ -283,7 +285,7 @@
                         <tr>
                             <td>{{ action }}</td>
                             <td><a class="btn" id="cat_{{ action.action_id }}" href="javascript:void(0)"
-                                   onclick="edit_category('{{ action.action_id }}')">Edit</a></td>
+                                   onclick="edit_category('{{ action.action_id }}')">{% trans "Edit" %}</a></td>
                         </tr>
                     {% endfor %}
                 </table>

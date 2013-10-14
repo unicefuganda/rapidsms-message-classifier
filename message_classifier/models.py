@@ -1,6 +1,7 @@
 from django.db import models
 from  rapidsms_httprouter.models import Message
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 
 class IbmCategory(models.Model):
@@ -21,7 +22,7 @@ class IbmCategory(models.Model):
 
 class IbmAction(models.Model):
     action_id = models.SmallIntegerField(primary_key=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, verbose_name=_("Name"))
 
     def __unicode__(self):
         return self.name

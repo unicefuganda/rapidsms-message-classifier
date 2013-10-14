@@ -5,22 +5,23 @@ from models import IbmCategory, IbmAction, IbmMsgCategory
 from poll.models import Poll
 from generic.forms import FilterForm, ActionForm
 from tasks import message_export
+from django.utils.translation import ugettext as _
 
 
 class QueueForm(forms.Form):
-    startdate = forms.DateField(('%d/%m/%Y',), label='Start Date', required=False,
+    startdate = forms.DateField(('%d/%m/%Y',), label=_('Start Date'), required=False,
                                 widget=forms.DateTimeInput(format='%d/%m/%Y', attrs={
                                     'class': 'input',
                                     'readonly': 'readonly',
                                     'size': '15'
                                 }))
-    enddate = forms.DateField(('%d/%m/%Y',), label='End Date', required=False,
+    enddate = forms.DateField(('%d/%m/%Y',), label=_('End Date'), required=False,
                               widget=forms.DateTimeInput(format='%d/%m/%Y', attrs={
                                   'class': 'input',
                                   'readonly': 'readonly',
                                   'size': '15'
                               }))
-    name = forms.CharField(max_length=30, required=True)
+    name = forms.CharField(max_length=30, required=True, label=_("Name"))
 
     def queue_export(self, username, host, queryset):
         # import pdb; pdb.set_trace()
@@ -45,7 +46,7 @@ class PollUploadForm(forms.Form):
 class ChooseCategoryForm(FilterForm):
     CATEGORIES = [("", "-----------")] + [(pk, name.capitalize()) for pk, name in
                                           list(IbmCategory.objects.values_list('category_id', 'name').order_by('name'))]
-    category = forms.ChoiceField(choices=CATEGORIES)
+    category = forms.ChoiceField(choices=CATEGORIES, label=_("Category"))
 
     def filter(self, request, queryset):
         pk = self.cleaned_data['category']
@@ -71,8 +72,8 @@ class AssignActionForm(ActionForm):
     ACTIONS = [(pk, name.capitalize()) for pk, name in
                list(IbmAction.objects.values_list('action_id', 'name').order_by('name'))]
 
-    message_action = forms.ChoiceField(choices=ACTIONS)
-    action_label = "Set Action to Selected Messages"
+    message_action = forms.ChoiceField(choices=ACTIONS, label=_("Message action"))
+    action_label = _("Set Action to Selected Messages")
 
     def perform(self, request, results):
         action = IbmAction.objects.get(action_id=self.cleaned_data['message_action'])
@@ -93,7 +94,7 @@ class DeleteMessagesForm(ActionForm):
 
 
 class QueueAllForm(ActionForm):
-    action_label = "Queue all Selected Messages For Download"
+    action_label = _("Queue all Selected Messages For Download")
 
     def perform(self, request, results):
         message_ids = set([m.msg_id for m in results])

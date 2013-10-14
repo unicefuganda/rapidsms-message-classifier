@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from ureport.views.utils.paginator import ureport_paginate
 from models import IbmMsgCategory, IbmAction
 from ureport.forms import PushToMtracForm
+from django.utils.translation import ugettext as _
 
 
 @login_required
@@ -32,20 +33,20 @@ def message_classification(request):
     msg_form = QueueForm()
     action_form = NewActionForm
 
-    columns = [('Identifier', True, 'message__connection_id', SimpleSorter()),
-               ('Text', True, 'msg__text', SimpleSorter()),
-               ('Date', True, 'msg__date', SimpleSorter()),
-               ('Score', True, 'score', SimpleSorter()),
-               ('Category', True, 'category', SimpleSorter(),),
-               ('Action', True, 'action', SimpleSorter(),),
-               ('Rating', False, '', None)]
+    columns = [(_('Identifier'), True, 'message__connection_id', SimpleSorter()),
+               (_('Text'), True, 'msg__text', SimpleSorter()),
+               (_('Date'), True, 'msg__date', SimpleSorter()),
+               (_('Score'), True, 'score', SimpleSorter()),
+               (_('Category'), True, 'category', SimpleSorter(),),
+               (_('Action'), True, 'action', SimpleSorter(),),
+               (_('Rating'), False, '', None)]
 
     return generic(
         request,
         model=IbmMsgCategory,
         queryset=queryset,
         objects_per_page=20,
-        results_title='Classified Messages',
+        results_title=_('Classified Messages'),
         partial_row='message_classifier/message_row.html',
         base_template='message_classifier/message_classifier_base.html',
         paginator_template='ureport/partials/new_pagination.html',

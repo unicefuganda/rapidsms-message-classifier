@@ -14,7 +14,7 @@
     <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}contact/stylesheets/messages.css"/>
     <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}ureport/stylesheets/message_log.css"/>
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}generic/stylesheets/jquery-ui-1.7.3.custom.css"/>
-{#    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}message_classifier/stylesheets/rating.css">#}
+    {#    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}message_classifier/stylesheets/rating.css">#}
     <style type="text/css">
         .star-rating {
             list-style: none;
@@ -152,7 +152,7 @@
             $("#id_enddate").datepicker({ dateFormat: 'dd/mm/yy' ,changeYear: true ,changeMonth: true,minDate: new Date(2009, 1 - 1, 1) });
 
             $("#queue_form")
-                       .bind('ajax:success', function(data, status, xhr) {
+                    .bind('ajax:success', function(data, status, xhr) {
                         var $form = $(this);
 
                         // Reset fields and any validation errors, so form can be used again, but leave hidden_field values intact.
@@ -175,12 +175,12 @@
 
             $('#poll_upload_form').submit(function() {
 
-                            ajax_loading('#poll_upload');
-                           $('#poll_upload_form').attr('target', 'upload_target2');
+                ajax_loading('#poll_upload');
+                $('#poll_upload_form').attr('target', 'upload_target2');
 
 
 
-                       });
+            });
 
 
 
@@ -227,7 +227,7 @@
 
     <div class="ibm_logo" style="float: right; font-weight: bold; font-size: 18px; color: #00aeef">{% trans "Powered by Text Analytics from IBM Research" %}</div>
     <br style="clear: both"/>
-    
+
     <div>
         <ul class="nav nav-tabs">
             <li class="active"><a href="#download" data-toggle="tab">{% trans "Queue Download" %}</a></li>
@@ -239,12 +239,12 @@
         <div class="tab-content">
 
             <div class="tab-pane active" id="download">
-                  <form action="" method="POST" data-remote=true id="queue_form">
-                <table>
-                    <tr>
-                        <td>{% trans "Select Date range for messages to queue for download" %}</td>
+                <form action="" method="POST" data-remote=true id="queue_form">
+                    <table>
+                        <tr>
+                            <td>{% trans "Select Date range for messages to queue for download" %}</td>
 
-                    </tr>
+                        </tr>
 
 
                         {{ msg_form.as_table }}
@@ -254,8 +254,8 @@
 
 
 
-                </table>
-                      </form>
+                    </table>
+                </form>
             </div>
 
 
@@ -263,7 +263,7 @@
             <div class="tab-pane" id="category">
                 <h2>{% trans "Add new Action" %}</h2>
                 <form method="Post" action="">
-                <table>
+                    <table>
 
                         {{ action_form.as_table }}
                         <tr>
@@ -271,7 +271,7 @@
                             <td><a href="{%  url flaggedmessages %}">{% trans "Manage Category Flags" %}</a></td>
                         </tr>
 
-                </table>
+                    </table>
 
                 </form>
             </div>

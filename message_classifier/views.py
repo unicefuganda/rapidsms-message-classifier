@@ -46,7 +46,7 @@ def message_classification(request):
         model=IbmMsgCategory,
         queryset=queryset,
         objects_per_page=20,
-        results_title=_('Classified Messages'),
+        results_title='Classified Messages',
         partial_row='message_classifier/message_row.html',
         base_template='message_classifier/message_classifier_base.html',
         paginator_template='ureport/partials/new_pagination.html',
